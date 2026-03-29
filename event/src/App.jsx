@@ -39,6 +39,7 @@ function App() {
       {/* {selectedTab===Task ? <Task></Task>:null} */}
 
       <h2>Total Notes: {notes.length+1}</h2>
+      <Dashboard></Dashboard>
     <Notes></Notes>
     <Events></Events>
     
