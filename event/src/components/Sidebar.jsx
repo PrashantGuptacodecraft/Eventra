@@ -1,26 +1,33 @@
-import React from 'react'
-import { useApp } from '../context/AppContext'
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useApp } from "../context/AppContext";
 
-const Sidebar = ({ currentPage, setPage }) => {
-  const { user, logout } = useApp()
+const Sidebar = () => {
+  const { user, logout } = useApp();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const userLinks = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'tasks', label: 'Tasks' },
-    { id: 'events', label: 'Events' },
-    { id: 'hackathons', label: 'Hackathons' },
-    { id: 'qna', label: 'Q&A' },
-    { id: 'notes', label: 'Notes' },
-    { id: 'profile', label: 'Profile' },
-  ]
+    { id: "dashboard", label: "Dashboard", path: "/dashboard" },
+    { id: "tasks", label: "Tasks", path: "/tasks" },
+    { id: "events", label: "Events", path: "/events" },
+    { id: "hackathons", label: "Hackathons", path: "/hackathons" },
+    { id: "qna", label: "Q&A", path: "/qna" },
+    { id: "notes", label: "Notes", path: "/notes" },
+    { id: "profile", label: "Profile", path: "/profile" },
+  ];
 
   const adminLinks = [
-    { id: 'admin', label: 'Admin Dashboard' },
-    { id: 'events', label: 'Manage Events' },
-    { id: 'hackathons', label: 'Manage Hackathons' },
-  ]
+    { id: "admin", label: "Admin Dashboard", path: "/admin" },
+    { id: "events", label: "Manage Events", path: "/events" },
+    { id: "hackathons", label: "Manage Hackathons", path: "/hackathons" },
+  ];
 
-  const links = user?.role === 'admin' ? adminLinks : userLinks
+  const links = user?.role === "admin" ? adminLinks : userLinks;
+
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
 
   return (
     <div
@@ -31,7 +38,7 @@ const Sidebar = ({ currentPage, setPage }) => {
         background: "linear-gradient(135deg, #667eea, #764ba2, #ff6a00)",
         backgroundSize: "300% 300%",
         animation: "gradientMove 8s ease infinite",
-        backdropFilter: "blur(10px)"
+        backdropFilter: "blur(10px)",
       }}
     >
       {/* Logo */}
@@ -41,12 +48,12 @@ const Sidebar = ({ currentPage, setPage }) => {
 
       {/* Links */}
       <div className="d-flex flex-column gap-2 flex-grow-1">
-        {links.map(link => (
+        {links.map((link) => (
           <button
             key={link.id}
-            onClick={() => setPage(link.id)}
+            onClick={() => handleNavigation(link.path)}
             className={`sidebar-btn ${
-              currentPage === link.id ? 'active' : ''
+              location.pathname === link.path ? "active" : ""
             }`}
           >
             {link.label}
@@ -55,13 +62,16 @@ const Sidebar = ({ currentPage, setPage }) => {
       </div>
 
       {/* Logout */}
-      <div className="mt-auto pt-3 border-top" style={{ borderColor: "rgba(255,255,255,0.3)" }}>
+      <div
+        className="mt-auto pt-3 border-top"
+        style={{ borderColor: "rgba(255,255,255,0.3)" }}
+      >
         <button onClick={logout} className="sidebar-btn logout-btn">
           🚪 Logout
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
