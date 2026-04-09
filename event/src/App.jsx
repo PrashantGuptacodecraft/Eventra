@@ -1,13 +1,17 @@
 import "./App.css";
 
 import { useApp } from "./context/AppContext";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 // Components
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
-// import Toast   from './components/Toast'
 
 // Pages
 import Login from "./pages/Login";
@@ -20,11 +24,19 @@ import Notes from "./pages/Notes";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
-// import { useState } from 'react'
-
 function App() {
-  // const[selectedTab,setSelectedTab]=useState("Tasks")
-  const { notes } = useApp();
+  const { user } = useApp();
+
+  if (!user) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    );
+  }
 
   return (
     <Router>
@@ -33,7 +45,7 @@ function App() {
         <div className="content">
           <Header />
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/events" element={<Events />} />
@@ -42,7 +54,10 @@ function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/login" element={<Login />} />
+            <Route
+              path="/login"
+              element={<Navigate to="/dashboard" replace />}
+            />
           </Routes>
         </div>
       </div>

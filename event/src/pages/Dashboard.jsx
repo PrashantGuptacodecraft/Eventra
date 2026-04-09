@@ -2,123 +2,116 @@ import React from "react";
 import { useApp } from "../context/AppContext";
 
 const Dashboard = () => {
-  const { user, tasks, events } = useApp();
+  const { user, tasks, events, hackathons, notes, qna } = useApp();
 
-  const done = 1;
-  const total = 3;
-  const percent = Math.round((done / total) * 100);
+  const userTasks = tasks.filter((task) => task.userId === user.id);
+  const totalTasks = userTasks.length;
+  const completedTasks = userTasks.filter((task) => task.done).length;
+  const pendingTasks = totalTasks - completedTasks;
+  const upcomingEvents = events.filter(
+    (event) => new Date(event.date) > new Date(),
+  ).length;
+  const percent =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const recentTasks = userTasks.slice(-3).reverse();
 
   return (
-    <div>
-      <div className="page-top">
-        <div>
-          <div className="page-title">Dashboard</div>
-          <div className="page-sub">
-            Hello, {user?.name || user?.username}! Here is your summary.
+    <div className="p-6">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+        <p className="text-gray-600">
+          Hello, {user?.name || user?.username}! Here is your summary.
+        </p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div className="text-2xl font-bold text-blue-600">{totalTasks}</div>
+          <div className="text-sm text-gray-600">Total Tasks</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div className="text-2xl font-bold text-green-600">
+            {completedTasks}
           </div>
+          <div className="text-sm text-gray-600">Completed</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div className="text-2xl font-bold text-red-600">{pendingTasks}</div>
+          <div className="text-sm text-gray-600">Pending</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div className="text-2xl font-bold text-purple-600">
+            {upcomingEvents}
+          </div>
+          <div className="text-sm text-gray-600">Upcoming Events</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div className="text-2xl font-bold text-orange-600">
+            {user?.points || 0}
+          </div>
+          <div className="text-sm text-gray-600">Points Earned</div>
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="stats-row">
-        <div className="stat-card " style={{ borderTopColor: "#1a73e8" }}>
-          <div className="stat-number" style={{ color: "#1a73e8" }}>
-            /
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Task Progress */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+          <div className="flex items-center mb-4">
+            <span className="text-2xl mr-2">📈</span>
+            <h3 className="text-xl font-semibold">Task Progress</h3>
           </div>
-          <div className="stat-label">Total Tasks</div>
-        </div>
-
-        <div className="stat-card" style={{ borderTopColor: "#2e7d32" }}>
-          <div className="stat-number" style={{ color: "#2e7d32" }}>
-            /
-          </div>
-          <div className="stat-label">Completed</div>
-        </div>
-        <div className="stat-card" style={{ borderTopColor: "#c62828" }}>
-          <div className="stat-number" style={{ color: "#c62828" }}>
-            /
-          </div>
-          <div className="stat-label">Pending</div>
-        </div>
-
-        <div className="stat-card" style={{ borderTopColor: "#7b1fa2" }}>
-          <div className="stat-number" style={{ color: "#7b1fa2" }}>
-            /
-          </div>
-          <div className="stat-label">Upcoming Events</div>
-        </div>
-        <div className="stat-card" style={{ borderTopColor: "#f57f17" }}>
-          <div className="stat-number" style={{ color: "#f57f17" }}>
-            {user?.points || 0}
-          </div>
-          <div className="stat-label">Points Earned</div>
-        </div>
-
-        {/* progress new pannel */}
-        <div className="card border-0 shadow-sm rounded-4 p-4">
-          {/* Header */}
-          <div className="d-flex align-items-center mb-2">
-            <span className="me-2 fs-4">📈</span>
-            <h5 className="fw-bold mb-0">Task Progress</h5>
-          </div>
-
-          {/* Text + % */}
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="text-secondary fs-5">
-              {done} of {total} tasks done
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-gray-600">
+              {completedTasks} of {totalTasks} tasks done
             </span>
-            <span className="text-primary fw-bold fs-5">{percent}%</span>
+            <span className="text-blue-600 font-bold">{percent}%</span>
           </div>
-
-          {/* Progress Bar */}
-          <div
-            className="progress"
-            style={{ height: "12px", borderRadius: "10px" }}
-          >
+          <div className="w-full bg-gray-200 rounded-full h-3">
             <div
-              className="progress-bar bg-primary"
-              role="progressbar"
-              style={{ width: `${percent}%`, borderRadius: "10px" }}
-              aria-valuenow={percent}
-              aria-valuemin="0"
-              aria-valuemax="100"
+              className="bg-blue-600 h-3 rounded-full"
+              style={{ width: `${percent}%` }}
             ></div>
           </div>
         </div>
 
-        {/* last pannel */}
-
-        <div className="card border-0 shadow-sm rounded-4 p-4">
-          {/* Header */}
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h4 className="fw-bold mb-0">Recent Tasks</h4>
-            <button className="btn btn-primary rounded-pill px-4">
+        {/* Recent Tasks */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">Recent Tasks</h3>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
               View All
             </button>
           </div>
-
-          {/* Task 1 */}
-          <div className="d-flex justify-content-between align-items-center py-3 border-bottom">
-            <span className="fs-5">Complete Math Assignment</span>
-            <span className="badge rounded-pill border border-danger text-danger px-3 py-2">
-              High
-            </span>
-          </div>
-
-          {/* Task 2 */}
-          <div className="d-flex justify-content-between align-items-center py-3 border-bottom  ">
-            <span className="fs-5">Read Chapter 5 Physics</span>
-            <span className="badge rounded-pill border border-warning text-warning px-3 py-2">
-              Medium
-            </span>
-          </div>
-
-          {/* Task 3 */}
-          <div className="d-flex justify-content-between align-items-center py-3">
-            <span className="fs-5">Submit History Essay</span>
-            <span className="badge rounded-pill border border-danger text-danger px-3 py-2">
-              High
-            </span>
+          <div className="space-y-3">
+            {recentTasks.map((task) => (
+              <div
+                key={task.id}
+                className="flex items-center justify-between p-3 bg-gray-50 rounded"
+              >
+                <div>
+                  <h4
+                    className={`font-medium ${task.done ? "line-through text-gray-500" : "text-gray-800"}`}
+                  >
+                    {task.title}
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    Priority: {task.priority}{" "}
+                    {task.deadline &&
+                      `| Due: ${new Date(task.deadline).toLocaleDateString()}`}
+                  </p>
+                </div>
+                <span
+                  className={`px-2 py-1 rounded text-xs ${task.done ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
+                >
+                  {task.done ? "Done" : "Pending"}
+                </span>
+              </div>
+            ))}
+            {recentTasks.length === 0 && (
+              <p className="text-gray-500 text-center py-4">No tasks yet.</p>
+            )}
           </div>
         </div>
       </div>
