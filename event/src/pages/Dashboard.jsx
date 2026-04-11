@@ -2,7 +2,7 @@ import React from "react";
 import { useApp } from "../context/AppContext";
 
 const Dashboard = () => {
-  const { user, tasks, events, hackathons, notes, qna } = useApp();
+  const { user, tasks, events } = useApp();
 
   const userTasks = tasks.filter((task) => task.userId === user.id);
   const totalTasks = userTasks.length;
