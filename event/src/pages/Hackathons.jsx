@@ -17,6 +17,8 @@ const Hackathons = () => {
       (filter === "past" && new Date(hack.date) < new Date());
     return matchesSearch && matchesFilter;
   });
+  const joinedCount = hackathons.filter((hack) => hack.teams.includes(user.id)).length;
+  const sectionCoins = joinedCount * 10;
 
   const handleJoin = (hackId) => {
     const updated = hackathons.map((hack) =>
@@ -65,7 +67,10 @@ const Hackathons = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Hackathons</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Hackathons</h1>
+        <p className="text-sm text-gray-600 mt-1">Coins earned in this section: {sectionCoins}</p>
+      </div>
 
       {/* Search */}
       <div className="mb-4">

@@ -36,10 +36,10 @@ const Header = () => {
 
         {/* Nav */}
         <ul className="nav d-none d-md-flex gap-2 mb-0">
-          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/dashboard")}>Dashboard</button></li>
-          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/tasks")}>Tasks</button></li>
-          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/events")}>Events</button></li>
-          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/hackathons")}>Hackathons</button></li>
+          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/dashboard")}>Home</button></li>
+          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/qna")}>Q&A</button></li>
+          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/notes")}>Notes</button></li>
+          <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/poll")}>Poll</button></li>
         </ul>
 
         {/* Right */}

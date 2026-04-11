@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
+import "./Profile.css";
 
 const Profile = () => {
   const { user, users, setUsers, showToast } = useApp();
@@ -11,6 +12,20 @@ const Profile = () => {
   });
   const [changePassword, setChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+
+  const toggleEditing = () => {
+    const nextEditing = !isEditing;
+    setIsEditing(nextEditing);
+    if (nextEditing) {
+      setFormData({
+        name: user?.name || "",
+        username: user?.username || "",
+        password: "",
+      });
+      setChangePassword(false);
+      setNewPassword("");
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -51,129 +66,123 @@ const Profile = () => {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Profile</h1>
+    <section className="profile-page p-4 p-md-5">
+      <div className="profile-shell">
+        <div className="profile-hero-card">
+          <div className="profile-avatar-circle">
+            {(user?.name || user?.username || "U").slice(0, 1).toUpperCase()}
+          </div>
+          <div className="profile-hero-content">
+            <h1>{user?.name || "User Profile"}</h1>
+            <p>@{user?.username}</p>
+            <div className="profile-badge-row">
+              <span className="profile-pill profile-pill-soft">
+                {user?.role === "admin" ? "Administrator" : "Student"}
+              </span>
+              <span className="profile-pill profile-pill-strong">
+                {user?.points || 0} points
+              </span>
+            </div>
+          </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Personal Information</h2>
           <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={toggleEditing}
+            className={`profile-edit-btn ${isEditing ? "cancel" : "edit"}`}
           >
             {isEditing ? "Cancel" : "Edit Profile"}
           </button>
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Name
-              </label>
+          <form onSubmit={handleSubmit} className="profile-form-grid">
+            <div className="profile-field">
+              <label>Name</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="profile-input"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
+            <div className="profile-field">
+              <label>Username</label>
               <input
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                className="profile-input"
               />
             </div>
-            <div className="flex items-center">
+            <div className="profile-switch-row">
               <input
                 type="checkbox"
                 id="changePassword"
                 checked={changePassword}
                 onChange={(e) => setChangePassword(e.target.checked)}
-                className="mr-2"
+                className="profile-checkbox"
               />
-              <label htmlFor="changePassword" className="text-sm">
+              <label htmlFor="changePassword">
                 Change Password
               </label>
             </div>
             {changePassword && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  New Password
-                </label>
+              <div className="profile-field full">
+                <label>New Password</label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="profile-input"
                 />
               </div>
             )}
             <button
               type="submit"
-              className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+              className="profile-save-btn"
             >
               Save Changes
             </button>
           </form>
         ) : (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Name
-              </label>
-              <p className="mt-1 text-gray-900">{user.name}</p>
+          <div className="profile-info-grid">
+            <div className="profile-info-card">
+              <span>Name</span>
+              <p>{user.name}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <p className="mt-1 text-gray-900">{user.username}</p>
+            <div className="profile-info-card">
+              <span>Username</span>
+              <p>{user.username}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Role
-              </label>
-              <p className="mt-1 text-gray-900 capitalize">{user.role}</p>
+            <div className="profile-info-card">
+              <span>Role</span>
+              <p className="capitalize">{user.role}</p>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Points
-              </label>
-              <p className="mt-1 text-gray-900">{user.points || 0}</p>
+            <div className="profile-info-card">
+              <span>Points</span>
+              <p>{user.points || 0}</p>
             </div>
           </div>
         )}
-      </div>
-
-      <div className="mt-6 bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Account Statistics</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {user.points || 0}
+        <div className="profile-stats-card">
+          <h2>Account Statistics</h2>
+          <div className="profile-stats-grid">
+            <div className="profile-stat-box">
+              <div className="value">{user.points || 0}</div>
+              <div className="label">Total Points</div>
             </div>
-            <div className="text-sm text-gray-600">Total Points</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {users.filter((u) => u.role === "user").length}
+            <div className="profile-stat-box">
+              <div className="value">{users.filter((u) => u.role === "user").length}</div>
+              <div className="label">Total Users</div>
             </div>
-            <div className="text-sm text-gray-600">Total Users</div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 
