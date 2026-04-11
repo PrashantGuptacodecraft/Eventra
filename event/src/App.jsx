@@ -1,4 +1,5 @@
 import "./App.css";
+import { useEffect } from "react";
 
 import { useApp } from "./context/AppContext";
 import {
@@ -25,7 +26,12 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
 function App() {
-  const { user } = useApp();
+  const { user, darkMode } = useApp();
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+    document.documentElement.setAttribute("data-bs-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   if (!user) {
     return (
@@ -44,24 +50,26 @@ function App() {
         <Sidebar />
         <div className="content">
           <Header />
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/tasks" element={<Tasks />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/hackathons" element={<Hackathons />} />
-            <Route path="/qna" element={<QnA />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route
-              path="/login"
-              element={<Navigate to="/dashboard" replace />}
-            />
-          </Routes>
+          <main className="content-scroll">
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/hackathons" element={<Hackathons />} />
+              <Route path="/qna" element={<QnA />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route
+                path="/login"
+                element={<Navigate to="/dashboard" replace />}
+              />
+            </Routes>
+            <Footer />
+          </main>
         </div>
       </div>
-      <Footer />
     </Router>
   );
 }

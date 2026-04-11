@@ -1,9 +1,20 @@
 @import "tailwindcss";
+html, body, #root {
+  height: 100%;
+}
+
 .app-container{
   display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 .content{
   width: 100%;
+  min-width: 0;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
 }
 .sidebar{
   min-height: 800px;
@@ -60,6 +71,9 @@
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 /* Nav links */
@@ -90,5 +104,59 @@
   cursor: pointer;
 }
 
+.content-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+.app-footer {
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+[data-theme="light"] .content {
+  background: #f3f6fb;
+  color: #0f172a;
+}
+
+[data-theme="dark"] .content {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .header-glass {
+  background: rgba(15, 23, 42, 0.9);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+[data-theme="dark"] .app-footer {
+  background: rgba(15, 23, 42, 0.95);
+  border-top: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+[data-theme="dark"] .header-link {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .header-link:hover {
+  color: #facc15;
+}
+
+.user-menu-dropdown {
+  min-width: 220px;
+  max-width: min(92vw, 320px);
+  max-height: calc(100vh - 84px);
+  overflow-y: auto;
+  right: 0;
+  left: auto;
+}
+
+@media (max-width: 576px) {
+  .user-menu-dropdown {
+    max-width: calc(100vw - 16px);
+    right: -4px;
+  }
+}
 
 
