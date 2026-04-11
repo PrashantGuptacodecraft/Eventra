@@ -60,6 +60,35 @@ export function AppProvider({ children }) {
     saveData('loggedInUser', fresh)
   }
 
+  function awardDailyTaskCoin(dateKey) {
+    if (!user) return false
+
+    const key = dateKey || new Date().toISOString().slice(0, 10)
+    let awarded = false
+
+    const updated = users.map(u => {
+      if (u.id !== user.id) return u
+
+      const rewardDates = Array.isArray(u.taskDailyRewardDates) ? u.taskDailyRewardDates : []
+      if (rewardDates.includes(key)) return u
+
+      awarded = true
+      return {
+        ...u,
+        points: (u.points || 0) + 1,
+        taskDailyRewardDates: [...rewardDates, key],
+      }
+    })
+
+    if (!awarded) return false
+
+    setUsers(updated)
+    const fresh = updated.find(u => u.id === user.id)
+    setUser(fresh)
+    saveData('loggedInUser', fresh)
+    return true
+  }
+
   // ── Login ─────────────────────────────────────────────
   function login(username, password) {
     const found = users.find(
@@ -80,6 +109,7 @@ export function AppProvider({ children }) {
       name, username, password,
       role: 'user',
       points: 0,
+      taskDailyRewardDates: [],
     }
     const updated = [...users, newUser]
     setUsers(updated)
@@ -110,6 +140,7 @@ export function AppProvider({ children }) {
 
     // Helpers
     addPoints,
+    awardDailyTaskCoin,
     showToast,
     toasts,
 

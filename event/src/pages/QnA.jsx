@@ -10,6 +10,13 @@ const QnA = () => {
   });
   const [answeringQuestion, setAnsweringQuestion] = useState(null);
   const [answerContent, setAnswerContent] = useState("");
+  const askedByUser = qna.filter((question) => question.userId === user.id).length;
+  const answersByUser = qna.reduce(
+    (count, question) =>
+      count + question.answers.filter((answer) => answer.userId === user.id).length,
+    0,
+  );
+  const sectionCoins = askedByUser * 3 + answersByUser * 5;
 
   const handleChange = (e) => {
     setFormData({
@@ -29,7 +36,7 @@ const QnA = () => {
     };
     setQna([...qna, newQuestion]);
     showToast("Question posted", "success");
-    addPoints(3); // Points for asking question
+    addPoints(3);
     setShowForm(false);
     setFormData({ title: "", content: "" });
   };
@@ -47,6 +54,7 @@ const QnA = () => {
                 userId: user.id,
                 content: answerContent,
                 upvotes: 0,
+                upvotedBy: [],
               },
             ],
           }
@@ -54,18 +62,32 @@ const QnA = () => {
     );
     setQna(updated);
     showToast("Answer posted", "success");
-    addPoints(5); // Points for answering
+    addPoints(5);
     setAnsweringQuestion(null);
     setAnswerContent("");
   };
 
   const handleUpvote = (questionId, answerId) => {
+    const question = qna.find((q) => q.id === questionId);
+    const answer = question?.answers.find((a) => a.id === answerId);
+
+    if (answer?.upvotedBy?.includes(user.id)) {
+      showToast("You already upvoted this answer", "info");
+      return;
+    }
+
     const updated = qna.map((q) =>
       q.id === questionId
         ? {
             ...q,
             answers: q.answers.map((a) =>
-              a.id === answerId ? { ...a, upvotes: a.upvotes + 1 } : a,
+              a.id === answerId
+                ? {
+                    ...a,
+                    upvotes: a.upvotes + 1,
+                    upvotedBy: [...(a.upvotedBy || []), user.id],
+                  }
+                : a,
             ),
           }
         : q,
@@ -77,7 +99,12 @@ const QnA = () => {
   return (
     <div className="p-4 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Q&A Forum</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Q&A Forum</h1>
+          <p className="text-sm text-gray-600 mt-1">
+            Coins earned in this section: {sectionCoins}
+          </p>
+        </div>
         <button
           onClick={() => setShowForm(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm"
@@ -153,9 +180,8 @@ const QnA = () => {
                 </h3>
                 <p className="text-gray-600 text-sm mb-2">{question.content}</p>
                 <div className="text-xs text-gray-500">
-                  Asked by{" "}
-                  {users.find((u) => u.id === question.userId)?.name ||
-                    "Unknown"}
+                  Asked by {" "}
+                  {users.find((u) => u.id === question.userId)?.name || "Unknown"}
                 </div>
               </div>
               <button
@@ -198,29 +224,34 @@ const QnA = () => {
               </div>
 
               <div className="space-y-2">
-                {question.answers.map((answer) => (
-                  <div
-                    key={answer.id}
-                    className="bg-gray-50 rounded-md p-3 border-l-2 border-blue-200"
-                  >
-                    <p className="text-gray-700 text-sm mb-2">
-                      {answer.content}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500">
-                        By{" "}
-                        {users.find((u) => u.id === answer.userId)?.name ||
-                          "Unknown"}
-                      </span>
-                      <button
-                        onClick={() => handleUpvote(question.id, answer.id)}
-                        className="flex items-center gap-1 text-gray-600 hover:text-blue-600 text-xs"
-                      >
-                        👍 {answer.upvotes}
-                      </button>
+                {question.answers.map((answer) => {
+                  const alreadyUpvoted = answer.upvotedBy?.includes(user.id);
+
+                  return (
+                    <div
+                      key={answer.id}
+                      className="bg-gray-50 rounded-md p-3 border-l-2 border-blue-200"
+                    >
+                      <p className="text-gray-700 text-sm mb-2">
+                        {answer.content}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-500">
+                          By {" "}
+                          {users.find((u) => u.id === answer.userId)?.name ||
+                            "Unknown"}
+                        </span>
+                        <button
+                          onClick={() => handleUpvote(question.id, answer.id)}
+                          className="flex items-center gap-1 text-gray-600 hover:text-blue-600 text-xs"
+                          disabled={alreadyUpvoted}
+                        >
+                          👍 {answer.upvotes}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {question.answers.length === 0 && (
                   <p className="text-gray-400 text-sm italic text-center py-2">
                     No answers yet
@@ -232,7 +263,7 @@ const QnA = () => {
         ))}
         {qna.length === 0 && (
           <div className="text-center py-8">
-            <div className="text-4xl mb-2">❓</div>
+            <div className="text-4xl mb-2">?</div>
             <h3 className="text-lg font-semibold text-gray-800 mb-1">
               No questions yet
             </h3>

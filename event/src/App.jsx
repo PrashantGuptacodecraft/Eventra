@@ -22,6 +22,7 @@ import Events from "./pages/Events";
 import Hackathons from "./pages/Hackathons";
 import QnA from "./pages/QnA";
 import Notes from "./pages/Notes";
+import Poll from "./pages/Poll";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 
@@ -59,6 +60,7 @@ function App() {
               <Route path="/hackathons" element={<Hackathons />} />
               <Route path="/qna" element={<QnA />} />
               <Route path="/notes" element={<Notes />} />
+              <Route path="/poll" element={<Poll />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
               <Route

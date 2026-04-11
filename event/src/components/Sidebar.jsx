@@ -11,7 +11,6 @@ const Sidebar = () => {
     { id: "dashboard", label: "Dashboard", path: "/dashboard" },
     { id: "tasks", label: "Tasks", path: "/tasks" },
     { id: "events", label: "Events", path: "/events" },
-    { id: "hackathons", label: "Hackathons", path: "/hackathons" },
     { id: "qna", label: "Q&A", path: "/qna" },
     { id: "notes", label: "Notes", path: "/notes" },
     { id: "profile", label: "Profile", path: "/profile" },
@@ -20,7 +19,6 @@ const Sidebar = () => {
   const adminLinks = [
     { id: "admin", label: "Admin Dashboard", path: "/admin" },
     { id: "events", label: "Manage Events", path: "/events" },
-    { id: "hackathons", label: "Manage Hackathons", path: "/hackathons" },
   ];
 
   const links = user?.role === "admin" ? adminLinks : userLinks;

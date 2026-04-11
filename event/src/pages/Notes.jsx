@@ -11,6 +11,7 @@ const Notes = () => {
   });
 
   const userNotes = notes.filter((note) => note.userId === user.id);
+  const sectionCoins = userNotes.length * 2;
 
   const handleChange = (e) => {
     setFormData({
@@ -66,6 +67,7 @@ const Notes = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-800">📝 My Notes</h1>
           <p className="text-gray-600">{userNotes.length} notes</p>
+          <p className="text-sm text-gray-500">Coins earned in this section: {sectionCoins}</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
