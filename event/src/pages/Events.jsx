@@ -63,20 +63,20 @@ function normalizeEvent(event) {
       ? event.joined
       : [];
 
-  let cat = event.category;
-  if (!cat) {
+  let category = event.category;
+  if (!category) {
     const text = ((event.title || "") + " " + (event.description || event.desc || "")).toLowerCase();
     if (text.includes("fest") || text.includes("cultural") || text.includes("music") || text.includes("dance")) {
-      cat = "Fest";
+      category = "Fest";
     } else {
-      cat = "Hackathon";
+      category = "Hackathon";
     }
   }
 
   return {
     id: event.id,
     title: event.title,
-    category: cat,
+    category,
     date: event.date,
     venue: event.venue || event.location || "TBD",
     description: event.description || event.desc || "No description available.",
@@ -101,7 +101,6 @@ const EventsPage = () => {
   const allEvents = useMemo(() => {
     const stateEvents = Array.isArray(events) ? events : [];
 
-    // Keep fallback cards, but let saved/state events override matching ids.
     const eventMap = new Map();
 
     fallbackEvents.forEach((event) => {

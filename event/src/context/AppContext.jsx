@@ -1,162 +1,183 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from 'react'
-import { getData, saveData, seedData } from '../utils/storage'
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getData, saveData, seedData } from "../utils/storage";
 
-// ── Seed demo data once ───────────────────────────
-seedData()
+seedData();
 
-// ── Create the context ────────────────────────────
-const AppContext = createContext()
+const AppContext = createContext();
 
-// ── Provider component ────────────────────────────
 export function AppProvider({ children }) {
+  const [user, setUser] = useState(() => getData("loggedInUser") || null);
+  const [darkMode, setDarkMode] = useState(false);
 
-  // Auth state
-  const [user,     setUser]     = useState(() => getData('loggedInUser') || null)
-  const [darkMode, setDarkMode] = useState(false)
+  const [users, setUsers] = useState(() => getData("users") || []);
+  const [tasks, setTasks] = useState(() => getData("tasks") || []);
+  const [events, setEvents] = useState(() => getData("events") || []);
+  const [hackathons, setHackathons] = useState(() => getData("hackathons") || []);
+  const [qna, setQna] = useState(() => getData("qna") || []);
+  const [notes, setNotes] = useState(() => getData("notes") || []);
+  const [feedback, setFeedback] = useState(() => getData("feedback") || []);
+  const [toasts, setToasts] = useState([]);
 
-  // Data state - loaded from localStorage
-  const [users,      setUsers]      = useState(() => getData('users')      || [])
-  const [tasks,      setTasks]      = useState(() => getData('tasks')      || [])
-  const [events,     setEvents]     = useState(() => getData('events')     || [])
-  const [hackathons, setHackathons] = useState(() => getData('hackathons') || [])
-  const [qna,        setQna]        = useState(() => getData('qna')        || [])
-  const [notes,      setNotes]      = useState(() => getData('notes')      || [])
-  const [feedback,   setFeedback]   = useState(() => getData('feedback')   || [])
-
-  // Toast notifications
-  const [toasts, setToasts] = useState([])
-
-  // ── Auto-save to localStorage whenever data changes ──
-  useEffect(() => { saveData('tasks',      tasks)      }, [tasks])
-  useEffect(() => { saveData('events',     events)     }, [events])
-  useEffect(() => { saveData('hackathons', hackathons) }, [hackathons])
-  useEffect(() => { saveData('qna',        qna)        }, [qna])
-  useEffect(() => { saveData('notes',      notes)      }, [notes])
-  useEffect(() => { saveData('feedback',   feedback)   }, [feedback])
-  useEffect(() => { saveData('users',      users)      }, [users])
   useEffect(() => {
-    if (user) saveData('loggedInUser', user)
-  }, [user])
+    saveData("tasks", tasks);
+  }, [tasks]);
 
-  // ── Toast helper ─────────────────────────────────────
-  function showToast(msg, type = 'info') {
-    const id = Date.now()
-    setToasts(prev => [...prev, { id, msg, type }])
+  useEffect(() => {
+    saveData("events", events);
+  }, [events]);
+
+  useEffect(() => {
+    saveData("hackathons", hackathons);
+  }, [hackathons]);
+
+  useEffect(() => {
+    saveData("qna", qna);
+  }, [qna]);
+
+  useEffect(() => {
+    saveData("notes", notes);
+  }, [notes]);
+
+  useEffect(() => {
+    saveData("feedback", feedback);
+  }, [feedback]);
+
+  useEffect(() => {
+    saveData("users", users);
+  }, [users]);
+
+  useEffect(() => {
+    if (user) {
+      saveData("loggedInUser", user);
+    }
+  }, [user]);
+
+  function showToast(msg, type = "info") {
+    const id = Date.now();
+    setToasts((current) => [...current, { id, msg, type }]);
+
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id))
-    }, 3000)
+      setToasts((current) => current.filter((toast) => toast.id !== id));
+    }, 3000);
   }
 
-  // ── Give points to current user ──────────────────────
-  function addPoints(pts) {
-    if (!user) return
-    const updated = users.map(u =>
-      u.id === user.id ? { ...u, points: (u.points || 0) + pts } : u
-    )
-    setUsers(updated)
-    const fresh = updated.find(u => u.id === user.id)
-    setUser(fresh)
-    saveData('loggedInUser', fresh)
+  function addPoints(points) {
+    if (!user) return;
+
+    const nextUsers = users.map((item) =>
+      item.id === user.id
+        ? { ...item, points: (item.points || 0) + points }
+        : item,
+    );
+
+    const nextUser = nextUsers.find((item) => item.id === user.id);
+
+    setUsers(nextUsers);
+    setUser(nextUser);
+    saveData("loggedInUser", nextUser);
   }
 
   function awardDailyTaskCoin(dateKey) {
-    if (!user) return false
+    if (!user) return false;
 
-    const key = dateKey || new Date().toISOString().slice(0, 10)
-    let awarded = false
+    const key = dateKey || new Date().toISOString().slice(0, 10);
+    let awarded = false;
 
-    const updated = users.map(u => {
-      if (u.id !== user.id) return u
+    const nextUsers = users.map((item) => {
+      if (item.id !== user.id) return item;
 
-      const rewardDates = Array.isArray(u.taskDailyRewardDates) ? u.taskDailyRewardDates : []
-      if (rewardDates.includes(key)) return u
+      const rewardDates = Array.isArray(item.taskDailyRewardDates)
+        ? item.taskDailyRewardDates
+        : [];
 
-      awarded = true
+      if (rewardDates.includes(key)) return item;
+
+      awarded = true;
       return {
-        ...u,
-        points: (u.points || 0) + 1,
+        ...item,
+        points: (item.points || 0) + 1,
         taskDailyRewardDates: [...rewardDates, key],
-      }
-    })
+      };
+    });
 
-    if (!awarded) return false
+    if (!awarded) return false;
 
-    setUsers(updated)
-    const fresh = updated.find(u => u.id === user.id)
-    setUser(fresh)
-    saveData('loggedInUser', fresh)
-    return true
+    const nextUser = nextUsers.find((item) => item.id === user.id);
+
+    setUsers(nextUsers);
+    setUser(nextUser);
+    saveData("loggedInUser", nextUser);
+    return true;
   }
 
-  // ── Login ─────────────────────────────────────────────
   function login(username, password) {
-    const found = users.find(
-      u => u.username === username && u.password === password
-    )
-    if (!found) return false
-    setUser(found)
-    saveData('loggedInUser', found)
-    return true
+    const foundUser = users.find(
+      (item) => item.username === username && item.password === password,
+    );
+
+    if (!foundUser) return false;
+
+    setUser(foundUser);
+    saveData("loggedInUser", foundUser);
+    return true;
   }
 
-  // ── Signup ────────────────────────────────────────────
   function signup(name, username, password) {
-    const exists = users.find(u => u.username === username)
-    if (exists) return false
+    const usernameTaken = users.find((item) => item.username === username);
+    if (usernameTaken) return false;
+
     const newUser = {
       id: Date.now(),
-      name, username, password,
-      role: 'user',
+      name,
+      username,
+      password,
+      role: "user",
       points: 0,
       taskDailyRewardDates: [],
-    }
-    const updated = [...users, newUser]
-    setUsers(updated)
-    setUser(newUser)
-    saveData('loggedInUser', newUser)
-    return true
+    };
+
+    setUsers([...users, newUser]);
+    setUser(newUser);
+    saveData("loggedInUser", newUser);
+    return true;
   }
 
-  // ── Logout ────────────────────────────────────────────
   function logout() {
-    setUser(null)
-    saveData('loggedInUser', null)
+    setUser(null);
+    saveData("loggedInUser", null);
   }
 
-  // ── Everything the app can access ─────────────────────
   const value = {
-    // Auth
-    user, login, signup, logout,
-
-    // Data + setters
-    users,      setUsers,
-    tasks,      setTasks,
-    events,     setEvents,
-    hackathons, setHackathons,
-    qna,        setQna,
-    notes,      setNotes,
-    feedback,   setFeedback,
-
-    // Helpers
+    user,
+    login,
+    signup,
+    logout,
+    users,
+    setUsers,
+    tasks,
+    setTasks,
+    events,
+    setEvents,
+    hackathons,
+    setHackathons,
+    qna,
+    setQna,
+    notes,
+    setNotes,
+    feedback,
+    setFeedback,
     addPoints,
     awardDailyTaskCoin,
     showToast,
     toasts,
+    darkMode,
+    setDarkMode,
+  };
 
-    // Theme
-    darkMode, setDarkMode,
-  }
-
-  return (
-    <AppContext.Provider value={value}>
-      {children}
-    </AppContext.Provider>
-  )
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
-// ── Custom hook so any component can use context easily ──
 export function useApp() {
-  return useContext(AppContext)
+  return useContext(AppContext);
 }
-
