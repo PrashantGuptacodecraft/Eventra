@@ -11,7 +11,11 @@ function EventCard({ event, isRegistered, onMoreInfo }) {
   const registeredCount = event.registeredUsers?.length || 0;
 
   return (
-    <article className="card border-0 shadow-sm rounded-4 h-100">
+    <article
+      className={`card border-0 shadow-sm rounded-4 h-100 ${
+        isRegistered ? "bg-success-subtle" : ""
+      }`}
+    >
       <div className="card-body p-4 d-flex flex-column gap-3">
         <div className="d-flex justify-content-between align-items-start gap-2">
           <h3 className="h5 mb-0 fw-bold">{event.title}</h3>

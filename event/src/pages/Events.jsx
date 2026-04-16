@@ -99,18 +99,23 @@ const EventsPage = () => {
   });
 
   const allEvents = useMemo(() => {
-    // Merge fallback events with actual state events so cards are always shown
     const stateEvents = Array.isArray(events) ? events : [];
-    
-    // Use fallback events as the base, then overlay state events
-    const combined = [...fallbackEvents];
-    stateEvents.forEach(se => {
-      if (!combined.find(ce => ce.id === se.id)) {
-        combined.push(se);
-      }
+
+    // Keep fallback cards, but let saved/state events override matching ids.
+    const eventMap = new Map();
+
+    fallbackEvents.forEach((event) => {
+      eventMap.set(event.id, event);
     });
 
-    return combined.map(normalizeEvent);
+    stateEvents.forEach((event) => {
+      eventMap.set(event.id, {
+        ...eventMap.get(event.id),
+        ...event,
+      });
+    });
+
+    return Array.from(eventMap.values()).map(normalizeEvent);
   }, [events]);
 
   const filteredEvents = useMemo(() => {

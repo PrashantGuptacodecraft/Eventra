@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 function EventModal({
   event,
@@ -6,6 +6,8 @@ function EventModal({
   onClose,
   onRegister,
 }) {
+  const [showQr, setShowQr] = useState(false);
+
   if (!event) {
     return null;
   }
@@ -13,6 +15,7 @@ function EventModal({
   const eventDate = new Date(event.date);
   const isPast = eventDate < new Date();
   const registeredCount = event.registeredUsers?.length || 0;
+  const qrImageUrl = "/qr-pass.svg";
 
   return (
     <div
@@ -21,7 +24,7 @@ function EventModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-4 shadow-lg p-4"
+        className={`rounded-4 shadow-lg p-4 ${isRegistered ? "bg-success-subtle" : "bg-white"}`}
         style={{ width: "min(92vw, 680px)", maxHeight: "85vh", overflowY: "auto" }}
         onClick={(eventClick) => eventClick.stopPropagation()}
       >
@@ -71,15 +74,52 @@ function EventModal({
           <span className="text-secondary small">
             Registered Users: {registeredCount}
           </span>
-          <button
-            type="button"
-            className={`btn rounded-pill px-4 ${isRegistered ? "btn-outline-secondary" : "btn-primary"}`}
-            onClick={onRegister}
-            disabled={isRegistered}
-          >
-            {isRegistered ? "Already Registered" : "Register Now"}
-          </button>
+          <div className="d-flex gap-2 flex-wrap justify-content-end">
+            {isRegistered ? (
+              <button
+                type="button"
+                className="btn btn-outline-dark rounded-pill px-4"
+                onClick={() => setShowQr((current) => !current)}
+              >
+                {showQr ? "Hide QR" : "Open QR"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-primary rounded-pill px-4"
+                onClick={onRegister}
+              >
+                Register Now
+              </button>
+            )}
+          </div>
         </div>
+
+        {isRegistered && showQr ? (
+          <div className="mt-4">
+            <div
+              className="mx-auto rounded-4 border shadow-sm bg-white overflow-hidden"
+              style={{ maxWidth: "320px" }}
+            >
+              <div className="px-3 py-2 border-bottom bg-light text-center">
+                <h6 className="mb-1 fw-bold">Event Entry QR</h6>
+                <p className="small text-secondary mb-0">{event.title}</p>
+              </div>
+              <div className="p-3 text-center">
+                <img
+                  src={qrImageUrl}
+                  alt="QR pass"
+                  className="img-fluid rounded-3 border bg-white p-2"
+                  width="220"
+                  height="220"
+                />
+                <p className="small text-secondary mb-0 mt-3">
+                  Open this QR photo and show it for scanning.
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
