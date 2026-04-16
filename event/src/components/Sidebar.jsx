@@ -29,12 +29,16 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar-shell d-flex flex-column p-3 text-white">
-      {/* Logo */}
-      <h3 className="text-center mb-4 fw-bold">🚀 UniPortal</h3>
+      <div className="text-center mb-4">
+        <img
+          src="/eventra-banner.png"
+          alt="Eventra"
+          className="sidebar-brand-image"
+        />
+      </div>
 
       <hr style={{ borderColor: "rgba(255,255,255,0.3)" }} />
 
-      {/* Links */}
       <div className="d-flex flex-column gap-2 flex-grow-1">
         {links.map((link) => (
           <button
@@ -49,13 +53,12 @@ const Sidebar = () => {
         ))}
       </div>
 
-      {/* Logout */}
       <div
         className="mt-auto pt-3 border-top"
         style={{ borderColor: "rgba(255,255,255,0.3)" }}
       >
         <button onClick={logout} className="sidebar-btn logout-btn">
-          🚪 Logout
+          Logout
         </button>
       </div>
     </div>

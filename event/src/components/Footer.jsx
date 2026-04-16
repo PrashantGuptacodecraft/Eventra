@@ -27,7 +27,7 @@ const Footer = () => {
     <footer className="app-footer">
       <div className="footer-shell">
         <div className="footer-brand-row">
-          <h2 className="footer-brand mb-0">UniPortal</h2>
+          <h2 className="footer-brand mb-0">Eventra</h2>
           <p className="footer-copy footer-copy-inline mb-0">
             Manage Events & Tasks Easily with one focused portal for campus,
             clubs, and team collaboration.
@@ -90,7 +90,7 @@ const Footer = () => {
             </a>
           </div>
           <p className="footer-meta mb-0">
-            &copy; {year} UniPortal. All rights reserved.
+            &copy; {year} Eventra. All rights reserved.
           </p>
         </div>
       </div>

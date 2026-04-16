@@ -19,7 +19,19 @@ const Dashboard = () => {
   return (
     <div className="container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
       <div className="mb-4 mb-md-5">
-        <h1 className="text-3xl font-bold text-gray-800">Home</h1>
+        <h1
+          className="fw-bold mb-2"
+          style={{
+            fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+            letterSpacing: "-0.04em",
+            lineHeight: 1,
+            background: "linear-gradient(90deg, #1e1b4b 0%, #4f46e5 45%, #d946ef 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Eventra
+        </h1>
         <p className="text-gray-600">
           Hello, {user?.name || user?.username}! Here is your summary.
         </p>

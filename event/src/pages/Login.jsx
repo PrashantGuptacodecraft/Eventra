@@ -23,14 +23,12 @@ const Login = () => {
     e.preventDefault();
     if (isLogin) {
       if (login(formData.username, formData.password)) {
-        showToast("Login successful", "success");
         navigate("/dashboard");
       } else {
         showToast("Invalid credentials", "error");
       }
     } else {
       if (signup(formData.name, formData.username, formData.password)) {
-        showToast("Account created", "success");
         navigate("/dashboard");
       } else {
         showToast("Username already exists", "error");
@@ -102,11 +100,6 @@ const Login = () => {
               ? "Need an account? Sign Up"
               : "Already have an account? Login"}
           </button>
-        </div>
-        <div className="mt-4 text-sm text-gray-600 text-center">
-          <p>Demo accounts:</p>
-          <p>Admin: admin/admin123</p>
-          <p>User: alice/alice123</p>
         </div>
       </div>
     </div>
