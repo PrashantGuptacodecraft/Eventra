@@ -5,6 +5,7 @@ import { useApp } from "../context/AppContext";
 const Header = () => {
   const { user, logout, darkMode, setDarkMode } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [infoPanel, setInfoPanel] = useState(null);
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
@@ -12,6 +13,7 @@ const Header = () => {
     function handleOutsideClick(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
+        setInfoPanel(null);
       }
     }
 
@@ -22,20 +24,22 @@ const Header = () => {
   const goTo = (path) => {
     navigate(path);
     setMenuOpen(false);
+    setInfoPanel(null);
   };
 
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
+    setInfoPanel(null);
     navigate("/login");
   };
 
   return (
     <header className="header-glass px-3 py-2">
-      <div className="d-flex align-items-center justify-content-between">
+      <div className="header-shell d-flex align-items-center justify-content-between gap-3">
 
         {/* Nav */}
-        <ul className="nav d-none d-md-flex gap-2 mb-0">
+        <ul className="nav header-nav gap-2 mb-0">
           <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/dashboard")}>Home</button></li>
           <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/qna")}>Q&A</button></li>
           <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/notes")}>Notes</button></li>
@@ -43,7 +47,7 @@ const Header = () => {
         </ul>
 
         {/* Right */}
-        <div className="d-flex align-items-center gap-2">
+        <div className="header-actions d-flex align-items-center gap-2 ms-auto">
 
           {/* Search */}
           <input
@@ -79,8 +83,42 @@ const Header = () => {
               </li>
               <li><hr className="dropdown-divider" /></li>
               <li><button className="dropdown-item" onClick={() => goTo("/profile")}>Profile</button></li>
-              <li><button className="dropdown-item" onClick={() => goTo("/profile")}>Settings</button></li>
-              <li><button className="dropdown-item" onClick={() => goTo("/qna")}>Help & Support</button></li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() =>
+                    setInfoPanel((current) =>
+                      current === "settings" ? null : "settings",
+                    )
+                  }
+                >
+                  Settings
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() =>
+                    setInfoPanel((current) =>
+                      current === "faqs" ? null : "faqs",
+                    )
+                  }
+                >
+                  FAQs
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() =>
+                    setInfoPanel((current) =>
+                      current === "report" ? null : "report",
+                    )
+                  }
+                >
+                  Report Issue
+                </button>
+              </li>
               <li>
                 <button
                   className="dropdown-item"
@@ -92,6 +130,57 @@ const Header = () => {
                   {darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
                 </button>
               </li>
+              {infoPanel === "settings" ? (
+                <>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li className="dropdown-item-text user-menu-panel-title">
+                    Settings
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    About App
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    Data Reset
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    Notification Settings
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-note">
+                    Available in future updates.
+                  </li>
+                </>
+              ) : null}
+              {infoPanel === "faqs" ? (
+                <>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li className="dropdown-item-text user-menu-panel-title">
+                    FAQs
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    How to add tasks?
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    How to join events?
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    How to reset password?
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-text">
+                    How to earn points?
+                  </li>
+                </>
+              ) : null}
+              {infoPanel === "report" ? (
+                <>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li className="dropdown-item-text user-menu-panel-title">
+                    Report Issue
+                  </li>
+                  <li className="dropdown-item-text user-menu-panel-note">
+                    Issue reporting will be available in future updates.
+                  </li>
+                </>
+              ) : null}
               <li><hr className="dropdown-divider" /></li>
               <li>
                 <button className="dropdown-item text-danger" onClick={handleLogout}>

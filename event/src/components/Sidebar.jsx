@@ -28,17 +28,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div
-      className="d-flex flex-column p-3 text-white"
-      style={{
-        width: "260px",
-        height: "100vh",
-        background: "linear-gradient(135deg, #667eea, #764ba2, #ff6a00)",
-        backgroundSize: "300% 300%",
-        animation: "gradientMove 8s ease infinite",
-        backdropFilter: "blur(10px)",
-      }}
-    >
+    <div className="sidebar-shell d-flex flex-column p-3 text-white">
       {/* Logo */}
       <h3 className="text-center mb-4 fw-bold">🚀 UniPortal</h3>
 

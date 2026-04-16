@@ -1,6 +1,6 @@
 .tasks-page {
   width: 100%;
-  padding: 28px;
+  padding: clamp(16px, 3vw, 28px);
   box-sizing: border-box;
 }
 
@@ -180,6 +180,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .task-left input[type="checkbox"] {
@@ -190,6 +191,7 @@
 .task-left span {
   color: #0f172a;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .completed {
@@ -306,6 +308,36 @@
   }
 
   .tasks-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  .task {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .task-left,
+  .task-right,
+  .tasks-daywise li {
+    width: 100%;
+  }
+
+  .task-right,
+  .tasks-daywise li {
+    justify-content: space-between;
+  }
+
+  .date-icon {
+    position: static;
+    transform: none;
+    display: inline-flex;
+    margin-top: 8px;
+  }
+
+  .date-input-container {
+    display: flex;
     flex-direction: column;
   }
 }

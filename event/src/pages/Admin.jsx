@@ -35,7 +35,7 @@ const Admin = () => {
 
   if (user.role !== "admin") {
     return (
-      <div className="p-6 text-center">
+      <div className="container-fluid px-3 px-md-4 py-4 text-center">
         <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
         <p>You need admin privileges to view this page.</p>
       </div>
@@ -104,11 +104,11 @@ const Admin = () => {
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Admin Panel</h1>
+    <div className="container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
+      <h1 className="text-3xl font-bold text-gray-800 mb-4 mb-md-5">Admin Panel</h1>
 
-      <div className="mb-6">
-        <nav className="flex gap-4">
+      <div className="mb-4 mb-md-5">
+        <nav className="d-flex gap-2 gap-md-3 flex-wrap">
           <button
             onClick={() => setActiveTab("users")}
             className={`px-4 py-2 rounded ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
@@ -177,7 +177,7 @@ const Admin = () => {
 
       {activeTab === "events" && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <h2 className="text-xl font-semibold">Event Management</h2>
             <button
               onClick={() => setShowCreateEvent(true)}
@@ -259,7 +259,7 @@ const Admin = () => {
                   />
                 </div>
               </div>
-              <div className="flex gap-2 mt-4">
+              <div className="d-flex gap-2 mt-4 flex-wrap">
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -291,7 +291,7 @@ const Admin = () => {
                 key={event.id}
                 className="border border-gray-200 rounded p-4"
               >
-                <div className="flex justify-between items-start">
+                <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                   <div>
                     <h3 className="font-semibold">{event.title}</h3>
                     <p className="text-sm text-gray-600">{event.desc}</p>
@@ -320,7 +320,7 @@ const Admin = () => {
 
       {activeTab === "hackathons" && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
             <h2 className="text-xl font-semibold">Hackathon Management</h2>
             <button
               onClick={() => setShowCreateHackathon(true)}
@@ -404,7 +404,7 @@ const Admin = () => {
                   />
                 </div>
               </div>
-              <div className="flex gap-2 mt-4">
+              <div className="d-flex gap-2 mt-4 flex-wrap">
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -433,7 +433,7 @@ const Admin = () => {
           <div className="space-y-4">
             {hackathons.map((hack) => (
               <div key={hack.id} className="border border-gray-200 rounded p-4">
-                <div className="flex justify-between items-start">
+                <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                   <div>
                     <h3 className="font-semibold">{hack.title}</h3>
                     <p className="text-sm text-gray-600">{hack.desc}</p>
