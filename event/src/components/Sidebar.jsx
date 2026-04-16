@@ -31,7 +31,7 @@ const Sidebar = () => {
     <div className="sidebar-shell d-flex flex-column p-3 text-white">
       <div className="text-center mb-4">
         <img
-          src="/eventra-banner.png"
+          src="/eventra-logo.jpeg"
           alt="Eventra"
           className="sidebar-brand-image"
         />

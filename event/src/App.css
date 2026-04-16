@@ -58,11 +58,15 @@ body {
 
 .sidebar-brand-image {
   width: 100%;
-  max-width: 210px;
+  max-width: 215px;
+  max-height: 118px;
   height: auto;
   display: block;
   margin: 0 auto;
-  border-radius: 14px;
+  border-radius: 22px;
+  background: #ffffff;
+  object-fit: contain;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
 }
 
 
