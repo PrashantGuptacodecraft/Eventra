@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
-import { getData, saveData } from "../utils/storage";
 
 const initialPolls = [
   {
@@ -22,14 +21,13 @@ const initialPolls = [
 ];
 
 const Poll = () => {
-  const { user, showToast } = useApp();
-  const [polls, setPolls] = useState(() => getData("polls") || initialPolls);
+  const { user, polls, setPolls, showToast } = useApp();
   const [newQuestion, setNewQuestion] = useState("");
   const [newOptions, setNewOptions] = useState(["", ""]);
-
-  useEffect(() => {
-    saveData("polls", polls);
-  }, [polls]);
+  const pollList = useMemo(
+    () => (Array.isArray(polls) && polls.length > 0 ? polls : initialPolls),
+    [polls],
+  );
 
   const addOptionField = () => {
     if (newOptions.length >= 5) return;
@@ -117,7 +115,7 @@ const Poll = () => {
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
           <h1 className="h3 fw-bold mb-0">Event Polls</h1>
           <span className="badge text-bg-light border">
-            {polls.length} Polls
+            {pollList.length} Polls
           </span>
         </div>
 
@@ -181,7 +179,7 @@ const Poll = () => {
         )}
 
         <div className="d-grid gap-3">
-          {polls.map((poll) => {
+          {pollList.map((poll) => {
             const totalVotes = poll.votes.reduce((sum, value) => sum + value, 0);
             const votedOption = poll.userVotes?.[user?.id];
 
@@ -225,7 +223,7 @@ const Poll = () => {
             );
           })}
 
-          {polls.length === 0 && (
+          {pollList.length === 0 && (
             <p className="text-center text-secondary py-4">No polls available.</p>
           )}
         </div>

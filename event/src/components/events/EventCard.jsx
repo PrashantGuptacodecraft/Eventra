@@ -1,6 +1,6 @@
 import React from "react";
 
-function EventCard({ event, isRegistered, onMoreInfo }) {
+function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
   const eventDate = new Date(event.date);
   const isPast = eventDate < new Date();
   const status = isPast ? "Past" : "Upcoming";
@@ -9,6 +9,8 @@ function EventCard({ event, isRegistered, onMoreInfo }) {
     : "text-bg-success";
   const category = event.category || "Hackathon";
   const registeredCount = event.registeredUsers?.length || 0;
+  const waitlistCount = event.waitlistUsers?.length || 0;
+  const seatsLeft = Math.max((event.seatLimit || 0) - registeredCount, 0);
 
   return (
     <article
@@ -27,6 +29,9 @@ function EventCard({ event, isRegistered, onMoreInfo }) {
           {isRegistered && (
             <span className="badge rounded-pill text-bg-info">Registered</span>
           )}
+          {isWaitlisted && (
+            <span className="badge rounded-pill text-bg-warning">Waitlisted</span>
+          )}
         </div>
 
         <p className="text-secondary mb-0">
@@ -37,7 +42,9 @@ function EventCard({ event, isRegistered, onMoreInfo }) {
         <div className="small text-secondary d-flex flex-column gap-1">
           <span>Date: {eventDate.toLocaleDateString()}</span>
           <span>Venue: {event.venue || "TBD"}</span>
-          <span>Registered: {registeredCount}</span>
+          <span>Registered: {registeredCount} / {event.seatLimit}</span>
+          <span>Seats Left: {seatsLeft}</span>
+          <span>Waitlist: {waitlistCount}</span>
         </div>
 
         <div className="mt-auto pt-2">

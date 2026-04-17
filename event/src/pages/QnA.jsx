@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
 
 const QnA = () => {
-  const { user, users, qna, setQna, showToast, addPoints } = useApp();
+  const { user, users, qna, setQna, showToast } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -10,6 +10,8 @@ const QnA = () => {
   });
   const [answeringQuestion, setAnsweringQuestion] = useState(null);
   const [answerContent, setAnswerContent] = useState("");
+  const [editingAnswer, setEditingAnswer] = useState(null);
+  const [editedAnswerContent, setEditedAnswerContent] = useState("");
   const askedByUser = qna.filter((question) => question.userId === user.id).length;
   const answersByUser = qna.reduce(
     (count, question) =>
@@ -32,11 +34,11 @@ const QnA = () => {
       userId: user.id,
       title: formData.title,
       content: formData.content,
+      createdAt: new Date().toISOString(),
       answers: [],
     };
     setQna([...qna, newQuestion]);
     showToast("Question posted", "success");
-    addPoints(3);
     setShowForm(false);
     setFormData({ title: "", content: "" });
   };
@@ -55,6 +57,8 @@ const QnA = () => {
                 content: answerContent,
                 upvotes: 0,
                 upvotedBy: [],
+                editHistory: [],
+                createdAt: new Date().toISOString(),
               },
             ],
           }
@@ -62,9 +66,41 @@ const QnA = () => {
     );
     setQna(updated);
     showToast("Answer posted", "success");
-    addPoints(5);
     setAnsweringQuestion(null);
     setAnswerContent("");
+  };
+
+  const handleEditAnswer = (questionId, answerId) => {
+    if (!editedAnswerContent.trim()) return;
+
+    const updated = qna.map((question) =>
+      question.id === questionId
+        ? {
+            ...question,
+            answers: question.answers.map((answer) =>
+              answer.id === answerId
+                ? {
+                    ...answer,
+                    content: editedAnswerContent,
+                    editHistory: [
+                      ...(Array.isArray(answer.editHistory) ? answer.editHistory : []),
+                      {
+                        id: Date.now(),
+                        editedAt: new Date().toISOString(),
+                        summary: "Answer content updated",
+                      },
+                    ],
+                  }
+                : answer,
+            ),
+          }
+        : question,
+    );
+
+    setQna(updated);
+    setEditingAnswer(null);
+    setEditedAnswerContent("");
+    showToast("Answer updated", "success");
   };
 
   const handleUpvote = (questionId, answerId) => {
@@ -180,7 +216,7 @@ const QnA = () => {
                 </h3>
                 <p className="text-gray-600 text-sm mb-2">{question.content}</p>
                 <div className="text-xs text-gray-500">
-                  Asked by {" "}
+                  Asked by{" "}
                   {users.find((u) => u.id === question.userId)?.name || "Unknown"}
                 </div>
               </div>
@@ -224,34 +260,88 @@ const QnA = () => {
               </div>
 
               <div className="space-y-2">
-                {question.answers.map((answer) => {
-                  const alreadyUpvoted = answer.upvotedBy?.includes(user.id);
+                {[...question.answers]
+                  .sort((a, b) => b.upvotes - a.upvotes || b.id - a.id)
+                  .map((answer) => {
+                    const alreadyUpvoted = answer.upvotedBy?.includes(user.id);
+                    const isOwner = answer.userId === user.id;
 
-                  return (
-                    <div
-                      key={answer.id}
-                      className="bg-gray-50 rounded-md p-3 border-l-2 border-blue-200"
-                    >
-                      <p className="text-gray-700 text-sm mb-2">
-                        {answer.content}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-gray-500">
-                          By {" "}
-                          {users.find((u) => u.id === answer.userId)?.name ||
-                            "Unknown"}
-                        </span>
-                        <button
-                          onClick={() => handleUpvote(question.id, answer.id)}
-                          className="flex items-center gap-1 text-gray-600 hover:text-blue-600 text-xs"
-                          disabled={alreadyUpvoted}
-                        >
-                          👍 {answer.upvotes}
-                        </button>
+                    return (
+                      <div
+                        key={answer.id}
+                        className="bg-gray-50 rounded-md p-3 border-l-2 border-blue-200"
+                      >
+                        <div className="d-flex justify-content-between align-items-start gap-2">
+                          <p className="text-gray-700 text-sm mb-2 flex-grow-1">
+                            {answer.content}
+                          </p>
+                        </div>
+                        <div className="flex justify-between items-center flex-wrap gap-2">
+                          <span className="text-xs text-gray-500">
+                            By{" "}
+                            {users.find((u) => u.id === answer.userId)?.name ||
+                              "Unknown"}
+                          </span>
+                          <div className="d-flex gap-2 flex-wrap">
+                            {isOwner ? (
+                              <button
+                                onClick={() => {
+                                  setEditingAnswer(
+                                    editingAnswer === answer.id ? null : answer.id,
+                                  );
+                                  setEditedAnswerContent(answer.content);
+                                }}
+                                className="btn btn-sm btn-outline-secondary"
+                              >
+                                Edit
+                              </button>
+                            ) : null}
+                            <button
+                              onClick={() => handleUpvote(question.id, answer.id)}
+                              className="flex items-center gap-1 text-gray-600 hover:text-blue-600 text-xs btn btn-sm btn-light"
+                              disabled={alreadyUpvoted}
+                            >
+                              Upvote {answer.upvotes}
+                            </button>
+                          </div>
+                        </div>
+
+                        {editingAnswer === answer.id ? (
+                          <div className="mt-3">
+                            <textarea
+                              value={editedAnswerContent}
+                              onChange={(e) => setEditedAnswerContent(e.target.value)}
+                              rows={2}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                            />
+                            <div className="d-flex gap-2 justify-content-end mt-2">
+                              <button
+                                onClick={() => handleEditAnswer(question.id, answer.id)}
+                                className="btn btn-sm btn-success"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingAnswer(null)}
+                                className="btn btn-sm btn-outline-secondary"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : null}
+
+                        {answer.editHistory?.length ? (
+                          <div className="text-xs text-gray-400 mt-2">
+                            Edited {answer.editHistory.length} time(s). Last edit:{" "}
+                            {new Date(
+                              answer.editHistory[answer.editHistory.length - 1].editedAt,
+                            ).toLocaleString()}
+                          </div>
+                        ) : null}
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 {question.answers.length === 0 && (
                   <p className="text-gray-400 text-sm italic text-center py-2">
                     No answers yet

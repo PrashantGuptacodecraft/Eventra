@@ -57,17 +57,17 @@ export default function Tasks() {
 
     const target = updated.find((task) => task.id === id);
     if (target?.done) {
-      showToast("Task done (+1 task point)", "success");
+      showToast("Task completed", "success");
 
       const updatedUserTasks = updated.filter((task) => task.userId === user.id);
       const todayCompleted = updatedUserTasks.filter(
         (task) => task.done && task.completedAt && getLocalDateKey(new Date(task.completedAt)) === todayKey,
       ).length;
 
-      if (todayCompleted >= 20) {
+      if (todayCompleted >= 15) {
         const awarded = awardDailyTaskCoin(todayKey);
         if (awarded) {
-          showToast("Daily limit reached! +1 main coin awarded", "success");
+          showToast("Daily goal reached! +2 coins awarded", "success");
         }
       }
     }
@@ -87,7 +87,7 @@ export default function Tasks() {
     }, {});
 
   const todayTaskPoints = taskPointsByDay[todayKey] || 0;
-  const dailyTarget = 20;
+  const dailyTarget = 15;
   const dailyRemaining = Math.max(dailyTarget - todayTaskPoints, 0);
   const dailyBonusEarned = (user?.taskDailyRewardDates || []).includes(todayKey);
 
@@ -113,11 +113,11 @@ export default function Tasks() {
           <div>
             <h2>Task Manager</h2>
             <p>Plan your day, complete tasks, and track progress clearly.</p>
-            <p className="tasks-coins">Task points today: {todayTaskPoints} / {dailyTarget}</p>
+            <p className="tasks-coins">Tasks done today: {todayTaskPoints} / {dailyTarget}</p>
             <p className="tasks-coins-muted">
               {dailyBonusEarned
-                ? "Daily bonus claimed: +1 main coin"
-                : `${dailyRemaining} tasks left to earn +1 main coin`}
+                ? "Daily bonus claimed: +2 coins"
+                : `${dailyRemaining} tasks left to earn +2 coins`}
             </p>
           </div>
 

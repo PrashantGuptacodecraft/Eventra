@@ -3,6 +3,7 @@ import React, { useState } from "react";
 function EventModal({
   event,
   isRegistered,
+  isWaitlisted,
   onClose,
   onRegister,
 }) {
@@ -15,6 +16,12 @@ function EventModal({
   const eventDate = new Date(event.date);
   const isPast = eventDate < new Date();
   const registeredCount = event.registeredUsers?.length || 0;
+  const waitlistCount = event.waitlistUsers?.length || 0;
+  const seatsLeft = Math.max((event.seatLimit || 0) - registeredCount, 0);
+  const deadline = event.registrationDeadline
+    ? new Date(event.registrationDeadline)
+    : eventDate;
+  const deadlinePassed = deadline < new Date();
   const qrImageUrl = "/qr-pass.svg";
 
   return (
@@ -38,6 +45,9 @@ function EventModal({
               <span className={`badge rounded-pill ${isPast ? "text-bg-secondary" : "text-bg-success"}`}>
                 {isPast ? "Past" : "Upcoming"}
               </span>
+              {isWaitlisted ? (
+                <span className="badge rounded-pill text-bg-warning">Waitlisted</span>
+              ) : null}
             </div>
           </div>
           <button type="button" className="btn-close" onClick={onClose} />
@@ -63,6 +73,22 @@ function EventModal({
               <p className="mb-0 text-secondary">{event.venue || "TBD"}</p>
             </div>
           </div>
+          <div className="col-sm-6">
+            <div className="border rounded-3 p-3 h-100">
+              <h6 className="mb-1">Seat Limit</h6>
+              <p className="mb-0 text-secondary">
+                {registeredCount} / {event.seatLimit} filled
+              </p>
+            </div>
+          </div>
+          <div className="col-sm-6">
+            <div className="border rounded-3 p-3 h-100">
+              <h6 className="mb-1">Registration Deadline</h6>
+              <p className="mb-0 text-secondary">
+                {deadline.toLocaleDateString()}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mb-4">
@@ -72,24 +98,38 @@ function EventModal({
 
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
           <span className="text-secondary small">
-            Registered Users: {registeredCount}
+            Registered: {registeredCount} | Seats left: {seatsLeft} | Waitlist: {waitlistCount}
           </span>
           <div className="d-flex gap-2 flex-wrap justify-content-end">
             {isRegistered ? (
-              <button
-                type="button"
-                className="btn btn-outline-dark rounded-pill px-4"
-                onClick={() => setShowQr((current) => !current)}
-              >
-                {showQr ? "Hide QR" : "Open QR"}
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="btn btn-outline-dark rounded-pill px-4"
+                  onClick={() => setShowQr((current) => !current)}
+                >
+                  {showQr ? "Hide QR" : "Open QR"}
+                </button>
+                <a
+                  href={qrImageUrl}
+                  download={`event-pass-${event.id}.svg`}
+                  className="btn btn-outline-primary rounded-pill px-4"
+                >
+                  Download Pass
+                </a>
+              </>
+            ) : isWaitlisted ? (
+              <span className="badge text-bg-warning px-3 py-2 rounded-pill">
+                You are on the waitlist
+              </span>
             ) : (
               <button
                 type="button"
                 className="btn btn-primary rounded-pill px-4"
                 onClick={onRegister}
+                disabled={deadlinePassed || isPast}
               >
-                Register Now
+                {deadlinePassed ? "Registration Closed" : "Register Now"}
               </button>
             )}
           </div>

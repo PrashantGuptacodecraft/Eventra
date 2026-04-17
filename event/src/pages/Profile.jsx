@@ -1,9 +1,19 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
 import "./Profile.css";
 
 const Profile = () => {
-  const { user, users, setUsers, showToast } = useApp();
+  const {
+    user,
+    setUser,
+    users,
+    setUsers,
+    showToast,
+    events,
+    tasks,
+    qna,
+    polls,
+  } = useApp();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user.name,
@@ -12,6 +22,32 @@ const Profile = () => {
   });
   const [changePassword, setChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+
+  const joinedEvents = useMemo(
+    () =>
+      events.filter((event) =>
+        (event.registeredUsers || event.joined || []).includes(user.id),
+      ),
+    [events, user.id],
+  );
+  const completedTasks = useMemo(
+    () => tasks.filter((task) => task.userId === user.id && task.done),
+    [tasks, user.id],
+  );
+  const answeredQuestions = useMemo(
+    () =>
+      qna.flatMap((question) =>
+        question.answers
+          .filter((answer) => answer.userId === user.id)
+          .map((answer) => ({ ...answer, questionTitle: question.title })),
+      ),
+    [qna, user.id],
+  );
+  const createdPolls = useMemo(
+    () => polls.filter((poll) => poll.createdBy === user.id),
+    [polls, user.id],
+  );
+  const pointsHistory = Array.isArray(user.pointsHistory) ? [...user.pointsHistory].reverse() : [];
 
   const toggleEditing = () => {
     const nextEditing = !isEditing;
@@ -46,7 +82,6 @@ const Profile = () => {
       updatedUser.password = newPassword;
     }
 
-    // Check if username is taken by another user
     const existing = users.find(
       (u) => u.username === formData.username && u.id !== user.id,
     );
@@ -57,12 +92,11 @@ const Profile = () => {
 
     const updatedUsers = users.map((u) => (u.id === user.id ? updatedUser : u));
     setUsers(updatedUsers);
-    // Update local user state would be handled by context, but since user is from localStorage, need to save
-    localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
-    // Removed toast notification for profile updates
+    setUser(updatedUser);
     setIsEditing(false);
     setChangePassword(false);
     setNewPassword("");
+    showToast("Profile updated", "success");
   };
 
   return (
@@ -125,9 +159,7 @@ const Profile = () => {
                 onChange={(e) => setChangePassword(e.target.checked)}
                 className="profile-checkbox"
               />
-              <label htmlFor="changePassword">
-                Change Password
-              </label>
+              <label htmlFor="changePassword">Change Password</label>
             </div>
             {changePassword && (
               <div className="profile-field full">
@@ -141,10 +173,7 @@ const Profile = () => {
                 />
               </div>
             )}
-            <button
-              type="submit"
-              className="profile-save-btn"
-            >
+            <button type="submit" className="profile-save-btn">
               Save Changes
             </button>
           </form>
@@ -168,17 +197,116 @@ const Profile = () => {
             </div>
           </div>
         )}
+
         <div className="profile-stats-card">
           <h2>Account Statistics</h2>
           <div className="profile-stats-grid">
             <div className="profile-stat-box">
-              <div className="value">{user.points || 0}</div>
-              <div className="label">Total Points</div>
+              <div className="value">{completedTasks.length}</div>
+              <div className="label">Completed Tasks</div>
             </div>
             <div className="profile-stat-box">
-              <div className="value">{users.filter((u) => u.role === "user").length}</div>
-              <div className="label">Total Users</div>
+              <div className="value">{joinedEvents.length}</div>
+              <div className="label">Joined Events</div>
             </div>
+            <div className="profile-stat-box">
+              <div className="value">{answeredQuestions.length}</div>
+              <div className="label">Answers Posted</div>
+            </div>
+            <div className="profile-stat-box">
+              <div className="value">{createdPolls.length}</div>
+              <div className="label">Created Polls</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-main-card">
+          <div className="profile-card-header">
+            <h2>Activity Profile</h2>
+            <p>Your recent participation and contribution summary.</p>
+          </div>
+          <div className="profile-activity-grid">
+            <div className="profile-activity-card">
+              <h3>Joined Events</h3>
+              {joinedEvents.length ? (
+                joinedEvents.slice(0, 4).map((event) => (
+                  <div key={event.id} className="profile-activity-item">
+                    <strong>{event.title}</strong>
+                    <span>{new Date(event.date).toLocaleDateString()}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="profile-empty-text">No joined events yet.</p>
+              )}
+            </div>
+
+            <div className="profile-activity-card">
+              <h3>Completed Tasks</h3>
+              {completedTasks.length ? (
+                completedTasks.slice(0, 4).map((task) => (
+                  <div key={task.id} className="profile-activity-item">
+                    <strong>{task.title}</strong>
+                    <span>
+                      {task.completedAt
+                        ? new Date(task.completedAt).toLocaleDateString()
+                        : "Completed"}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <p className="profile-empty-text">No completed tasks yet.</p>
+              )}
+            </div>
+
+            <div className="profile-activity-card">
+              <h3>Answered Questions</h3>
+              {answeredQuestions.length ? (
+                answeredQuestions.slice(0, 4).map((answer) => (
+                  <div key={answer.id} className="profile-activity-item">
+                    <strong>{answer.questionTitle}</strong>
+                    <span>{answer.content.slice(0, 40)}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="profile-empty-text">No Q&A activity yet.</p>
+              )}
+            </div>
+
+            <div className="profile-activity-card">
+              <h3>Created Polls</h3>
+              {createdPolls.length ? (
+                createdPolls.slice(0, 4).map((poll) => (
+                  <div key={poll.id} className="profile-activity-item">
+                    <strong>{poll.question}</strong>
+                    <span>{poll.options.length} options</span>
+                  </div>
+                ))
+              ) : (
+                <p className="profile-empty-text">No polls created yet.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-main-card">
+          <div className="profile-card-header">
+            <h2>Earned Points History</h2>
+            <p>Track how your points were earned over time.</p>
+          </div>
+          <div className="profile-history-list">
+            {pointsHistory.length ? (
+              pointsHistory.map((entry) => (
+                <div key={entry.id} className="profile-history-item">
+                  <div>
+                    <strong>{entry.reason}</strong>
+                    <span>{new Date(entry.createdAt).toLocaleString()}</span>
+                  </div>
+                  <div className="profile-history-points">+{entry.points}</div>
+                </div>
+              ))
+            ) : (
+              <p className="profile-empty-text">No point history available yet.</p>
+            )}
           </div>
         </div>
       </div>

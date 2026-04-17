@@ -13,6 +13,9 @@ const fallbackEvents = [
     description: "24-hour team hackathon to build campus-impact products.",
     rules: "Teams of 2-4. Original work only. Final demo mandatory.",
     registeredUsers: [],
+    waitlistUsers: [],
+    seatLimit: 40,
+    registrationDeadline: "2026-06-08",
   },
   {
     id: 102,
@@ -23,6 +26,9 @@ const fallbackEvents = [
     description: "Music, dance, and drama performances across departments.",
     rules: "Entry with student ID. Follow venue timing and stage rules.",
     registeredUsers: [],
+    waitlistUsers: [],
+    seatLimit: 120,
+    registrationDeadline: "2026-05-16",
   },
   {
     id: 104,
@@ -33,6 +39,9 @@ const fallbackEvents = [
     description: "Annual music competition where college bands face off.",
     rules: "15 minutes per band. Bring your own instruments. Pre-registration required.",
     registeredUsers: [],
+    waitlistUsers: [],
+    seatLimit: 30,
+    registrationDeadline: "2026-08-05",
   },
   {
     id: 103,
@@ -43,6 +52,9 @@ const fallbackEvents = [
     description: "Annual inter-college basketball tournament.",
     rules: "Teams of 5. Standard rules apply.",
     registeredUsers: [],
+    waitlistUsers: [],
+    seatLimit: 50,
+    registrationDeadline: "2026-07-10",
   },
   {
     id: 105,
@@ -53,6 +65,9 @@ const fallbackEvents = [
     description: "Track and field events including sprints, relays, and long jump.",
     rules: "Proper sports attire mandatory. Maximum 3 events per student.",
     registeredUsers: [],
+    waitlistUsers: [],
+    seatLimit: 80,
+    registrationDeadline: "2026-09-01",
   },
 ];
 
@@ -62,6 +77,9 @@ function normalizeEvent(event) {
     : Array.isArray(event.joined)
       ? event.joined
       : [];
+  const waitlistUsers = Array.isArray(event.waitlistUsers)
+    ? event.waitlistUsers
+    : [];
 
   let category = event.category;
   if (!category) {
@@ -82,6 +100,9 @@ function normalizeEvent(event) {
     description: event.description || event.desc || "No description available.",
     rules: event.rules || "Follow event guidelines and be respectful.",
     registeredUsers,
+    waitlistUsers,
+    seatLimit: Number(event.seatLimit) > 0 ? Number(event.seatLimit) : 50,
+    registrationDeadline: event.registrationDeadline || event.date,
   };
 }
 
@@ -96,6 +117,8 @@ const EventsPage = () => {
     venue: "",
     description: "",
     rules: "",
+    seatLimit: "50",
+    registrationDeadline: "",
   });
 
   const allEvents = useMemo(() => {
@@ -129,6 +152,11 @@ const EventsPage = () => {
     return event.registeredUsers.includes(user.id);
   };
 
+  const isWaitlisted = (event) => {
+    if (!event || !user) return false;
+    return event.waitlistUsers?.includes(user.id);
+  };
+
   const handleCreateEvent = (event) => {
     event.preventDefault();
 
@@ -136,9 +164,15 @@ const EventsPage = () => {
     const venue = newEvent.venue.trim();
     const description = newEvent.description.trim();
     const rules = newEvent.rules.trim();
+    const seatLimit = Number(newEvent.seatLimit);
 
     if (!title || !newEvent.date || !venue || !description) {
       showToast("Please fill all required fields", "error");
+      return;
+    }
+
+    if (!seatLimit || seatLimit < 1) {
+      showToast("Seat limit should be at least 1", "error");
       return;
     }
 
@@ -153,7 +187,10 @@ const EventsPage = () => {
       desc: description,
       rules: rules || "Follow event guidelines and be respectful.",
       registeredUsers: [],
+      waitlistUsers: [],
       joined: [],
+      seatLimit,
+      registrationDeadline: newEvent.registrationDeadline || newEvent.date,
     };
 
     setEvents([created, ...(Array.isArray(events) ? events : [])]);
@@ -164,6 +201,8 @@ const EventsPage = () => {
       venue: "",
       description: "",
       rules: "",
+      seatLimit: "50",
+      registrationDeadline: "",
     });
     showToast("Event created", "success");
   };
@@ -180,16 +219,33 @@ const EventsPage = () => {
       return;
     }
 
+    if (targetEvent.waitlistUsers?.includes(user.id)) {
+      showToast("You are already on the waitlist", "info");
+      return;
+    }
+
+    if (new Date(targetEvent.registrationDeadline) < new Date()) {
+      showToast("Registration deadline has passed", "error");
+      return;
+    }
+
     const updated = allEvents.map((event) => {
       if (event.id !== targetEvent.id) {
         return event;
       }
 
-      const nextRegisteredUsers = [...event.registeredUsers, user.id];
+      const hasSeats = event.registeredUsers.length < event.seatLimit;
+      const nextRegisteredUsers = hasSeats
+        ? [...event.registeredUsers, user.id]
+        : event.registeredUsers;
+      const nextWaitlistUsers = hasSeats
+        ? event.waitlistUsers
+        : [...event.waitlistUsers, user.id];
 
       return {
         ...event,
         registeredUsers: nextRegisteredUsers,
+        waitlistUsers: nextWaitlistUsers,
       };
     });
 
@@ -200,6 +256,8 @@ const EventsPage = () => {
         joined: event.registeredUsers,
         location: event.venue,
         desc: event.description,
+        seatLimit: event.seatLimit,
+        registrationDeadline: event.registrationDeadline,
       })),
     );
 
@@ -207,8 +265,13 @@ const EventsPage = () => {
       const freshSelected = updated.find((event) => event.id === targetEvent.id) || null;
       setSelectedEvent(freshSelected);
     }
-    addPoints(10);
-    showToast("Registered successfully", "success");
+    const wasRegistered = updated.find((event) => event.id === targetEvent.id);
+    if (wasRegistered?.registeredUsers.includes(user.id)) {
+      addPoints(10, `Registered for ${targetEvent.title}`);
+      showToast("Registered successfully", "success");
+    } else {
+      showToast("Event is full. Added to waitlist", "info");
+    }
   };
 
   return (
@@ -289,6 +352,31 @@ const EventsPage = () => {
                 }
               />
             </div>
+            <div className="col-md-3">
+              <input
+                type="number"
+                min="1"
+                className="form-control"
+                placeholder="Seat Limit"
+                value={newEvent.seatLimit}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({ ...prev, seatLimit: e.target.value }))
+                }
+              />
+            </div>
+            <div className="col-md-3">
+              <input
+                type="date"
+                className="form-control"
+                value={newEvent.registrationDeadline}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    registrationDeadline: e.target.value,
+                  }))
+                }
+              />
+            </div>
             <div className="col-12">
               <textarea
                 className="form-control"
@@ -315,6 +403,7 @@ const EventsPage = () => {
             <EventCard
               event={event}
               isRegistered={isRegistered(event)}
+              isWaitlisted={isWaitlisted(event)}
               onMoreInfo={setSelectedEvent}
             />
           </div>
@@ -324,6 +413,7 @@ const EventsPage = () => {
       <EventModal
         event={selectedEvent}
         isRegistered={isRegistered(selectedEvent)}
+        isWaitlisted={isWaitlisted(selectedEvent)}
         onClose={() => setSelectedEvent(null)}
         onRegister={() => handleRegister(selectedEvent)}
       />

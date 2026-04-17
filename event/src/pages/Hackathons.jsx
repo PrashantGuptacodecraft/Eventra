@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
 
 const Hackathons = () => {
-  const { user, hackathons, setHackathons, addPoints, showToast } = useApp();
+  const { user, hackathons, setHackathons, showToast } = useApp();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
@@ -26,7 +26,6 @@ const Hackathons = () => {
     );
     setHackathons(updated);
     showToast("Joined hackathon", "success");
-    addPoints(10); // Points for joining hackathon
   };
 
   const handleLeave = (hackId) => {

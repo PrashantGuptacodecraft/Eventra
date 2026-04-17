@@ -19,6 +19,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import Events from "./pages/Events";
+import Calendar from "./pages/Calendar";
 import Hackathons from "./pages/Hackathons";
 import QnA from "./pages/QnA";
 import Notes from "./pages/Notes";
@@ -57,6 +58,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/calendar" element={<Calendar />} />
               <Route path="/hackathons" element={<Hackathons />} />
               <Route path="/qna" element={<QnA />} />
               <Route path="/notes" element={<Notes />} />
