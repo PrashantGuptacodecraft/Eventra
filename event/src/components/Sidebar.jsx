@@ -29,15 +29,20 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar-shell d-flex flex-column p-3 text-white">
-      <div className="text-center mb-4">
-        <img
-          src="/eventra-logo.jpeg"
-          alt="Eventra"
-          className="sidebar-brand-image"
-        />
+      <div className="sidebar-brand text-center mb-3">
+        <div className="sidebar-brand-badge">
+          <img
+            src="/eventra-logo.jpeg"
+            alt="Eventra"
+            className="sidebar-brand-image"
+          />
+        </div>
       </div>
 
-      <hr style={{ borderColor: "rgba(255,255,255,0.3)" }} />
+      <hr
+        className="sidebar-divider"
+        style={{ borderColor: "rgba(255,255,255,0.3)" }}
+      />
 
       <div className="d-flex flex-column gap-2 flex-grow-1">
         {links.map((link) => (
