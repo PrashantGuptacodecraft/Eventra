@@ -89,7 +89,10 @@ const Footer = () => {
               adityagupta983869@gmail.com
             </a>
           </div>
-          <p className="footer-meta mb-0">
+        </div>
+
+        <div className="footer-bottom-row">
+          <p className="footer-meta footer-copyright mb-0">
             &copy; {year} Eventra. All rights reserved.
           </p>
         </div>
