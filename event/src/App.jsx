@@ -12,6 +12,7 @@ import {
 // Components
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import MobileNav from "./components/MobileNav";
 import Footer from "./components/Footer";
 
 // Pages
@@ -72,6 +73,7 @@ function App() {
             </Routes>
             <Footer />
           </main>
+          <MobileNav />
         </div>
       </div>
     </Router>

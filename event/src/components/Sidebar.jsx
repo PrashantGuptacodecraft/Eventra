@@ -84,7 +84,7 @@ const Sidebar = () => {
 
       <span className="sidebar-section-label">Workspace</span>
 
-      <div className="d-flex flex-column gap-2 flex-grow-1">
+      <div className="sidebar-menu d-flex flex-column gap-2 flex-grow-1">
         {links.map((link) => (
           <button
             key={link.id}
@@ -100,10 +100,16 @@ const Sidebar = () => {
         ))}
       </div>
 
-      <div
-        className="mt-auto pt-3 border-top"
-        style={{ borderColor: "rgba(255,255,255,0.3)" }}
-      >
+      <div className="sidebar-footer mt-auto pt-3">
+        <div className="sidebar-user-chip" title={user?.name || user?.username}>
+          <span className="sidebar-user-chip-icon">
+            {(user?.name || user?.username || "U").slice(0, 1).toUpperCase()}
+          </span>
+          <div className="sidebar-user-chip-text">
+            <strong>{user?.name || user?.username || "User"}</strong>
+            <span>{user?.role === "admin" ? "Admin" : "Student"}</span>
+          </div>
+        </div>
         <button
           onClick={logout}
           className="sidebar-btn logout-btn"
