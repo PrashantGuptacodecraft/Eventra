@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import { buildMergedEvents } from "../utils/eventData";
 
 const Dashboard = () => {
   const { user, tasks, events, users, notes } = useApp();
@@ -29,10 +30,14 @@ const Dashboard = () => {
   const dailyTarget = 15;
   const tasksLeftForCoin = Math.max(dailyTarget - todayCompletedTasks, 0);
   const dailyCoinEarned = (user?.taskDailyRewardDates || []).includes(todayKey);
+  const allEvents = useMemo(() => buildMergedEvents(events), [events]);
 
-  const upcomingEvents = [...events]
+  const upcomingEvents = [...allEvents]
     .filter((event) => new Date(event.date) >= now)
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const registeredEvents = allEvents.filter((event) =>
+    (event.registeredUsers || event.joined || []).includes(user.id),
+  );
   const registeredUpcomingEvents = upcomingEvents.filter((event) =>
     (event.registeredUsers || event.joined || []).includes(user.id),
   );
@@ -43,7 +48,7 @@ const Dashboard = () => {
       type: "event",
       title: event.title,
       date: event.date,
-      meta: `Registered event • ${event.location || event.venue || "Location TBD"}`,
+      meta: `Registered event - ${event.location || event.venue || "Location TBD"}`,
       actionPath: "/events",
     })),
     ...userTasks
@@ -61,31 +66,17 @@ const Dashboard = () => {
         type: "deadline",
         title: task.title,
         date: task.deadline || new Date(task.id).toISOString(),
-        meta: `Not completed • ${task.priority} priority`,
+        meta: `Not completed - ${task.priority} priority`,
         actionPath: "/tasks",
       })),
   ]
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(0, 6);
 
-  const urgentTask = [...userTasks]
-    .filter((task) => !task.done && task.deadline)
-    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))[0] || null;
-
-  const agendaItems = [
-    ...userTasks
+  const urgentTask =
+    [...userTasks]
       .filter((task) => !task.done && task.deadline)
-      .map((task) => ({
-        id: `task-${task.id}`,
-        type: "deadline",
-        title: task.title,
-        date: task.deadline,
-        meta: `Task deadline • ${task.priority} priority`,
-        actionPath: "/tasks",
-      })),
-  ]
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, 6);
+      .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))[0] || null;
 
   const urgentAlerts = [
     upcomingEvents[0]
@@ -118,8 +109,8 @@ const Dashboard = () => {
 
   const topParticipants = [...users]
     .filter((item) => item.role !== "admin")
-    .sort((a, b) => (b.points || 0) - (a.points || 0))
-    .slice(0, 5);
+    .sort((a, b) => (b.points || 0) - (a.points || 0));
+  const userRank = topParticipants.findIndex((participant) => participant.id === user?.id) + 1;
 
   const eventAndDeadlineItems = [
     ...upcomingEvents.slice(0, 4).map((event) => ({
@@ -281,6 +272,47 @@ const Dashboard = () => {
               )}
             </div>
           </div>
+
+          <div className="row g-3 mt-1">
+            <div className="col-12 col-xl-6">
+              <article className="dashboard-stat-card dashboard-stat-card-blue h-100">
+                <span className="dashboard-eyebrow mb-2">Events</span>
+                <h3 className="dashboard-panel-title mb-0">Registered Events</h3>
+                <div className="dashboard-stat-value">{registeredEvents.length}</div>
+                <p className="dashboard-stat-note mb-0">
+                  {registeredUpcomingEvents.length} upcoming event
+                  {registeredUpcomingEvents.length === 1 ? "" : "s"} on your calendar.
+                </p>
+              </article>
+            </div>
+
+            <div className="col-12 col-xl-6">
+              <article className="dashboard-stat-card dashboard-stat-card-amber h-100">
+                <div className="d-flex justify-content-between align-items-center gap-3 mb-3 flex-wrap">
+                  <div>
+                    <span className="dashboard-eyebrow mb-2">Progress</span>
+                    <h3 className="dashboard-panel-title mb-0">Task Completion</h3>
+                  </div>
+                  <span className="dashboard-progress-pill">{completionPercent}% done</span>
+                </div>
+
+                <div className="dashboard-progress-track dashboard-progress-track-lg mb-3">
+                  <div
+                    className="dashboard-progress-fill"
+                    style={{ width: `${completionPercent}%` }}
+                  ></div>
+                </div>
+
+                <div className="dashboard-progress-meta">
+                  <span>{completedTasks} completed</span>
+                  <span>{pendingTasks} pending</span>
+                  <span>
+                    {dailyCoinEarned ? "Daily coin earned" : `${tasksLeftForCoin} left for +2 coin`}
+                  </span>
+                </div>
+              </article>
+            </div>
+          </div>
         </div>
 
         <div className="dashboard-command-right">
@@ -309,56 +341,47 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="dashboard-panel">
-            <div className="d-flex justify-content-between align-items-center gap-3 mb-4 flex-wrap">
-              <h3 className="dashboard-panel-title mb-0">Progress & Rank</h3>
-              <span className="dashboard-progress-pill">{completionPercent}% done</span>
-            </div>
-
-            <div className="dashboard-stats-inline mb-4">
-              <div className="dashboard-inline-stat">
-                <strong>{userTasks.length}</strong>
-                <span>Tasks created</span>
-              </div>
-              <div className="dashboard-inline-stat">
-                <strong>{completedTasks}</strong>
-                <span>Tasks done</span>
-              </div>
-              <div className="dashboard-inline-stat">
-                <strong>{dailyCoinEarned ? 0 : tasksLeftForCoin}</strong>
-                <span>{dailyCoinEarned ? "Daily coin earned" : "Left for +2 coin"}</span>
-              </div>
-            </div>
-
-            <div className="dashboard-leader-mini-list">
-              {topParticipants.map((participant, index) => (
-                <div
-                  key={participant.id}
-                  className={`dashboard-leader-row ${
-                    participant.id === user?.id ? "dashboard-leader-row-active" : ""
-                  }`}
-                >
-                  <div className="d-flex align-items-center min-w-0">
-                    <div className="dashboard-leader-rank">#{index + 1}</div>
-                    <div className="min-w-0">
-                      <h4 className="font-medium text-gray-800 text-sm mb-1">
-                        {participant.name || participant.username}
-                        {participant.id === user?.id ? (
-                          <span className="text-orange-600 text-xs ms-1 fw-bold">
-                            (You)
-                          </span>
-                        ) : null}
-                      </h4>
-                      <p className="text-xs text-gray-500 capitalize mb-0">
-                        {participant.role}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="dashboard-leader-points">
-                    {participant.points || 0} pts
-                  </div>
+          <div className="row g-3">
+            <div className="col-12">
+              <article className="dashboard-stat-card dashboard-stat-card-violet h-100">
+                <span className="dashboard-eyebrow mb-2">Rank</span>
+                <h3 className="dashboard-panel-title mb-0">Your Position</h3>
+                <div className="dashboard-stat-value">
+                  {userRank > 0 ? `#${userRank}` : "-"}
                 </div>
-              ))}
+                <p className="dashboard-stat-note mb-3">{points} points earned so far.</p>
+
+                <div className="dashboard-leader-mini-list">
+                  {topParticipants.slice(0, 5).map((participant, index) => (
+                    <div
+                      key={participant.id}
+                      className={`dashboard-leader-row ${
+                        participant.id === user?.id ? "dashboard-leader-row-active" : ""
+                      }`}
+                    >
+                      <div className="d-flex align-items-center min-w-0">
+                        <div className="dashboard-leader-rank">#{index + 1}</div>
+                        <div className="min-w-0">
+                          <h4 className="font-medium text-gray-800 text-sm mb-1">
+                            {participant.name || participant.username}
+                            {participant.id === user?.id ? (
+                              <span className="text-orange-600 text-xs ms-1 fw-bold">
+                                (You)
+                              </span>
+                            ) : null}
+                          </h4>
+                          <p className="text-xs text-gray-500 capitalize mb-0">
+                            {participant.role}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="dashboard-leader-points">
+                        {participant.points || 0} pts
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
             </div>
           </div>
         </div>
@@ -423,7 +446,6 @@ const Dashboard = () => {
           {activityFeed.length > 0 ? (
             activityFeed.map((item) => (
               <div className="dashboard-timeline-item" key={item.id}>
-                <div className={`dashboard-timeline-dot dashboard-timeline-dot-${item.type}`}></div>
                 <div className="dashboard-timeline-card">
                   <h4 className="dashboard-timeline-title mb-1">{item.title}</h4>
                   <p className="dashboard-timeline-meta mb-1">{item.meta}</p>

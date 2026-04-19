@@ -44,7 +44,6 @@ export function AppProvider({ children }) {
   );
   const [tasks, setTasks] = useState(() => getData("tasks") || []);
   const [events, setEvents] = useState(() => getData("events") || []);
-  const [hackathons, setHackathons] = useState(() => getData("hackathons") || []);
   const [qna, setQna] = useState(() => getData("qna") || []);
   const [notes, setNotes] = useState(() => getData("notes") || []);
   const [polls, setPolls] = useState(() => getData("polls") || []);
@@ -58,10 +57,6 @@ export function AppProvider({ children }) {
   useEffect(() => {
     saveData("events", events);
   }, [events]);
-
-  useEffect(() => {
-    saveData("hackathons", hackathons);
-  }, [hackathons]);
 
   useEffect(() => {
     saveData("qna", qna);
@@ -191,8 +186,6 @@ export function AppProvider({ children }) {
     setTasks,
     events,
     setEvents,
-    hackathons,
-    setHackathons,
     qna,
     setQna,
     notes,

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
 
 const Admin = () => {
@@ -8,8 +8,6 @@ const Admin = () => {
     setUsers,
     events,
     setEvents,
-    hackathons,
-    setHackathons,
     tasks,
     notes,
     qna,
@@ -18,7 +16,6 @@ const Admin = () => {
   } = useApp();
   const [activeTab, setActiveTab] = useState("users");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
-  const [showCreateHackathon, setShowCreateHackathon] = useState(false);
   const [eventForm, setEventForm] = useState({
     title: "",
     desc: "",
@@ -26,15 +23,9 @@ const Admin = () => {
     location: "",
     seatLimit: "50",
     registrationDeadline: "",
-  });
-  const [hackathonForm, setHackathonForm] = useState({
-    title: "",
-    desc: "",
-    date: "",
-    prize: "",
+    category: "Hackathon",
   });
   const eventDateRef = useRef(null);
-  const hackathonDateRef = useRef(null);
 
   if (user.role !== "admin") {
     return (
@@ -54,15 +45,8 @@ const Admin = () => {
 
   const deleteEvent = (eventId) => {
     if (window.confirm("Delete this event?")) {
-      setEvents(events.filter((e) => e.id !== eventId));
+      setEvents(events.filter((event) => event.id !== eventId));
       showToast("Event deleted", "success");
-    }
-  };
-
-  const deleteHackathon = (hackId) => {
-    if (window.confirm("Delete this hackathon?")) {
-      setHackathons(hackathons.filter((h) => h.id !== hackId));
-      showToast("Hackathon deleted", "success");
     }
   };
 
@@ -73,24 +57,20 @@ const Admin = () => {
     });
   };
 
-  const handleHackathonChange = (e) => {
-    setHackathonForm({
-      ...hackathonForm,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   const createEvent = (e) => {
     e.preventDefault();
     const newEvent = {
       id: Date.now(),
       ...eventForm,
+      venue: eventForm.location,
+      description: eventForm.desc,
       joined: [],
       registeredUsers: [],
       waitlistUsers: [],
       seatLimit: Number(eventForm.seatLimit) || 50,
       registrationDeadline: eventForm.registrationDeadline || eventForm.date,
     };
+
     setEvents([...events, newEvent]);
     showToast("Event created", "success");
     setEventForm({
@@ -100,6 +80,7 @@ const Admin = () => {
       location: "",
       seatLimit: "50",
       registrationDeadline: "",
+      category: "Hackathon",
     });
     setShowCreateEvent(false);
   };
@@ -140,19 +121,6 @@ const Admin = () => {
     .sort((a, b) => (b.points || 0) - (a.points || 0))
     .slice(0, 5);
 
-  const createHackathon = (e) => {
-    e.preventDefault();
-    const newHackathon = {
-      id: Date.now(),
-      ...hackathonForm,
-      teams: [],
-    };
-    setHackathons([...hackathons, newHackathon]);
-    showToast("Hackathon created", "success");
-    setHackathonForm({ title: "", desc: "", date: "", prize: "" });
-    setShowCreateHackathon(false);
-  };
-
   return (
     <div className="container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
       <h1 className="text-3xl font-bold text-gray-800 mb-4 mb-md-5">Admin Panel</h1>
@@ -170,12 +138,6 @@ const Admin = () => {
             className={`px-4 py-2 rounded ${activeTab === "events" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
           >
             Events ({events.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("hackathons")}
-            className={`px-4 py-2 rounded ${activeTab === "hackathons" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-          >
-            Hackathons ({hackathons.length})
           </button>
           <button
             onClick={() => setActiveTab("stats")}
@@ -201,16 +163,16 @@ const Admin = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} className="border-b">
-                    <td className="py-2">{u.name}</td>
-                    <td className="py-2">{u.username}</td>
-                    <td className="py-2 capitalize">{u.role}</td>
-                    <td className="py-2">{u.points || 0}</td>
+                {users.map((member) => (
+                  <tr key={member.id} className="border-b">
+                    <td className="py-2">{member.name}</td>
+                    <td className="py-2">{member.username}</td>
+                    <td className="py-2 capitalize">{member.role}</td>
+                    <td className="py-2">{member.points || 0}</td>
                     <td className="py-2">
-                      {u.id !== user.id && (
+                      {member.id !== user.id && (
                         <button
-                          onClick={() => deleteUser(u.id)}
+                          onClick={() => deleteUser(member.id)}
                           className="px-3 py-1 bg-red-600 text-white rounded text-sm"
                         >
                           Delete
@@ -233,15 +195,12 @@ const Admin = () => {
               onClick={() => setShowCreateEvent(true)}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
-              Create Event
+              Create Event / Fest / Hackathon
             </button>
           </div>
 
           {showCreateEvent && (
-            <form
-              onSubmit={createEvent}
-              className="mb-6 p-4 bg-gray-50 rounded"
-            >
+            <form onSubmit={createEvent} className="mb-6 p-4 bg-gray-50 rounded">
               <h3 className="text-lg font-semibold mb-4">Create New Event</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -256,6 +215,20 @@ const Admin = () => {
                     required
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={eventForm.category}
+                    onChange={handleEventChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="Hackathon">Hackathon</option>
+                    <option value="Fest">Fest</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
@@ -278,7 +251,7 @@ const Admin = () => {
                         eventDateRef.current?.click()
                       }
                     >
-                      📅
+                      Date
                     </span>
                   </div>
                 </div>
@@ -353,6 +326,7 @@ const Admin = () => {
                       location: "",
                       seatLimit: "50",
                       registrationDeadline: "",
+                      category: "Hackathon",
                     });
                   }}
                   className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
@@ -365,25 +339,25 @@ const Admin = () => {
 
           <div className="space-y-4">
             {events.map((event) => (
-              <div
-                key={event.id}
-                className="border border-gray-200 rounded p-4"
-              >
+              <div key={event.id} className="border border-gray-200 rounded p-4">
                 <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                   <div>
                     <h3 className="font-semibold">{event.title}</h3>
-                    <p className="text-sm text-gray-600">{event.desc}</p>
+                    <p className="text-sm text-gray-600">{event.desc || event.description}</p>
+                    <p className="text-sm text-gray-500">
+                      Category: {event.category || "Hackathon"}
+                    </p>
                     <p className="text-sm text-gray-500">
                       Date: {new Date(event.date).toLocaleDateString()}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Location: {event.location}
+                      Location: {event.location || event.venue}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Joined: {event.registeredUsers?.length || event.joined.length}
+                      Joined: {event.registeredUsers?.length || event.joined?.length || 0}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Seats: {event.registeredUsers?.length || event.joined.length} / {event.seatLimit || 50}
+                      Seats: {event.registeredUsers?.length || event.joined?.length || 0} / {event.seatLimit || 50}
                     </p>
                     <p className="text-sm text-gray-500">
                       Deadline: {new Date(event.registrationDeadline || event.date).toLocaleDateString()}
@@ -402,202 +376,40 @@ const Admin = () => {
         </div>
       )}
 
-      {activeTab === "hackathons" && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            <h2 className="text-xl font-semibold">Hackathon Management</h2>
-            <button
-              onClick={() => setShowCreateHackathon(true)}
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            >
-              Create Hackathon
-            </button>
-          </div>
-
-          {showCreateHackathon && (
-            <form
-              onSubmit={createHackathon}
-              className="mb-6 p-4 bg-gray-50 rounded"
-            >
-              <h3 className="text-lg font-semibold mb-4">
-                Create New Hackathon
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Title
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={hackathonForm.title}
-                    onChange={handleHackathonChange}
-                    required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Date
-                  </label>
-                  <div className="relative">
-                    <input
-                      ref={hackathonDateRef}
-                      type="date"
-                      name="date"
-                      value={hackathonForm.date}
-                      onChange={handleHackathonChange}
-                      required
-                      className="mt-1 block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md"
-                    />
-                    <span
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-blue-600"
-                      onClick={() =>
-                        hackathonDateRef.current?.showPicker?.() ||
-                        hackathonDateRef.current?.click()
-                      }
-                    >
-                      📅
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Prize
-                  </label>
-                  <input
-                    type="text"
-                    name="prize"
-                    value={hackathonForm.prize}
-                    onChange={handleHackathonChange}
-                    required
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Description
-                  </label>
-                  <textarea
-                    name="desc"
-                    value={hackathonForm.desc}
-                    onChange={handleHackathonChange}
-                    required
-                    rows={3}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-              </div>
-              <div className="d-flex gap-2 mt-4 flex-wrap">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Create Hackathon
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowCreateHackathon(false);
-                    setHackathonForm({
-                      title: "",
-                      desc: "",
-                      date: "",
-                      prize: "",
-                    });
-                  }}
-                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          )}
-
-          <div className="space-y-4">
-            {hackathons.map((hack) => (
-              <div key={hack.id} className="border border-gray-200 rounded p-4">
-                <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
-                  <div>
-                    <h3 className="font-semibold">{hack.title}</h3>
-                    <p className="text-sm text-gray-600">{hack.desc}</p>
-                    <p className="text-sm text-gray-500">
-                      Date: {new Date(hack.date).toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-500">Prize: {hack.prize}</p>
-                    <p className="text-sm text-gray-500">
-                      Participants: {hack.teams.length}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => deleteHackathon(hack.id)}
-                    className="px-3 py-1 bg-red-600 text-white rounded text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {activeTab === "stats" && (
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-4">Platform Statistics</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="text-center p-4 bg-blue-50 rounded">
-              <div className="text-2xl font-bold text-blue-600">
-                {users.length}
-              </div>
+              <div className="text-2xl font-bold text-blue-600">{users.length}</div>
               <div className="text-sm text-gray-600">Total Users</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded">
-              <div className="text-2xl font-bold text-green-600">
-                {tasks.length}
-              </div>
+              <div className="text-2xl font-bold text-green-600">{tasks.length}</div>
               <div className="text-sm text-gray-600">Total Tasks</div>
             </div>
             <div className="text-center p-4 bg-yellow-50 rounded">
-              <div className="text-2xl font-bold text-yellow-600">
-                {events.length}
-              </div>
+              <div className="text-2xl font-bold text-yellow-600">{events.length}</div>
               <div className="text-sm text-gray-600">Total Events</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded">
-              <div className="text-2xl font-bold text-purple-600">
-                {hackathons.length}
-              </div>
-              <div className="text-sm text-gray-600">Total Hackathons</div>
-            </div>
             <div className="text-center p-4 bg-indigo-50 rounded">
-              <div className="text-2xl font-bold text-indigo-600">
-                {notes.length}
-              </div>
+              <div className="text-2xl font-bold text-indigo-600">{notes.length}</div>
               <div className="text-sm text-gray-600">Total Notes</div>
             </div>
             <div className="text-center p-4 bg-pink-50 rounded">
-              <div className="text-2xl font-bold text-pink-600">
-                {qna.length}
-              </div>
+              <div className="text-2xl font-bold text-pink-600">{qna.length}</div>
               <div className="text-sm text-gray-600">Total Questions</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded">
-              <div className="text-2xl font-bold text-orange-600">
-                {participationRate}%
-              </div>
+              <div className="text-2xl font-bold text-orange-600">{participationRate}%</div>
               <div className="text-sm text-gray-600">Event Participation</div>
             </div>
             <div className="text-center p-4 bg-emerald-50 rounded">
-              <div className="text-2xl font-bold text-emerald-600">
-                {completionRate}%
-              </div>
+              <div className="text-2xl font-bold text-emerald-600">{completionRate}%</div>
               <div className="text-sm text-gray-600">Task Completion</div>
             </div>
             <div className="text-center p-4 bg-sky-50 rounded">
-              <div className="text-2xl font-bold text-sky-600">
-                {polls.length}
-              </div>
+              <div className="text-2xl font-bold text-sky-600">{polls.length}</div>
               <div className="text-sm text-gray-600">Total Polls</div>
             </div>
           </div>
@@ -612,9 +424,7 @@ const Admin = () => {
                     className="d-flex justify-content-between align-items-center bg-white border rounded p-3"
                   >
                     <div>
-                      <div className="font-semibold">
-                        #{index + 1} {member.name}
-                      </div>
+                      <div className="font-semibold">#{index + 1} {member.name}</div>
                       <div className="text-sm text-gray-500">@{member.username}</div>
                     </div>
                     <div className="font-bold text-orange-600">{member.points || 0} pts</div>

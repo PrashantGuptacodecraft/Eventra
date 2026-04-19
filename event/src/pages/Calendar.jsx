@@ -40,7 +40,7 @@ function sameDay(left, right) {
 }
 
 function Calendar() {
-  const { user, tasks, events, hackathons } = useApp();
+  const { user, tasks, events } = useApp();
   const [viewMode, setViewMode] = useState("month");
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -66,19 +66,10 @@ function Calendar() {
       description: task.done ? "Completed task" : "Task deadline",
     }));
 
-    const hackathonItems = hackathons.map((hackathon) => ({
-      id: `hackathon-${hackathon.id}`,
-      type: "hackathon",
-      title: hackathon.title,
-      date: hackathon.date,
-      detail: `Prize: ${hackathon.prize}`,
-      description: hackathon.desc || "Hackathon schedule",
-    }));
-
-    return [...eventItems, ...taskItems, ...hackathonItems].sort(
+    return [...eventItems, ...taskItems].sort(
       (a, b) => new Date(a.date) - new Date(b.date),
     );
-  }, [events, hackathons, userTasks]);
+  }, [events, userTasks]);
 
   const itemsByDate = useMemo(() => {
     return calendarItems.reduce((acc, item) => {
@@ -162,8 +153,7 @@ function Calendar() {
             <span className="calendar-eyebrow">Unified Planner</span>
             <h1 className="calendar-title mb-2">Event Calendar View</h1>
             <p className="calendar-copy mb-0">
-              Track events, hackathons, and your task deadlines together in one
-              schedule.
+              Track events and your task deadlines together in one schedule.
             </p>
           </div>
 
@@ -171,7 +161,7 @@ function Calendar() {
             <span className="calendar-summary-label">Scheduled Items</span>
             <strong>{upcomingCount}</strong>
             <p className="mb-0">
-              Includes upcoming events, hackathons, and your deadlines.
+              Includes upcoming events and your deadlines.
             </p>
           </div>
         </div>
@@ -232,8 +222,7 @@ function Calendar() {
                   <div className="calendar-month-grid">
                     {monthDays.map((date) => {
                       const key = toDateKey(date);
-                      const isCurrentMonth =
-                        date.getMonth() === currentDate.getMonth();
+                      const isCurrentMonth = date.getMonth() === currentDate.getMonth();
                       const isSelected = sameDay(date, selectedDate);
                       const isToday = sameDay(date, new Date());
 
@@ -313,10 +302,6 @@ function Calendar() {
                   Events
                 </span>
                 <span className="calendar-legend-item">
-                  <span className="calendar-legend-dot calendar-legend-dot-hackathon"></span>
-                  Hackathons
-                </span>
-                <span className="calendar-legend-item">
                   <span className="calendar-legend-dot calendar-legend-dot-deadline"></span>
                   Deadlines
                 </span>
@@ -330,17 +315,11 @@ function Calendar() {
                       className={`calendar-agenda-item calendar-agenda-item-${item.type}`}
                     >
                       <div className="calendar-agenda-badge">
-                        {item.type === "deadline"
-                          ? "Task"
-                          : item.type === "hackathon"
-                            ? "Hackathon"
-                            : "Event"}
+                        {item.type === "deadline" ? "Task" : "Event"}
                       </div>
                       <h4 className="calendar-agenda-item-title">{item.title}</h4>
                       <p className="calendar-agenda-item-detail mb-1">{item.detail}</p>
-                      <p className="calendar-agenda-item-copy mb-0">
-                        {item.description}
-                      </p>
+                      <p className="calendar-agenda-item-copy mb-0">{item.description}</p>
                     </article>
                   ))
                 ) : (
