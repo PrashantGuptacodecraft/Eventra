@@ -20,6 +20,7 @@ const EventsPage = () => {
   });
 
   const allEvents = useMemo(() => {
+    // Static aur admin-created events ko ek hi list me merge karke use kar raha hu.
     return buildMergedEvents(Array.isArray(events) ? events : []);
   }, [events]);
 
@@ -43,6 +44,7 @@ const EventsPage = () => {
   const handleCreateEvent = (event) => {
     event.preventDefault();
 
+    // Form values trim kiye taki extra spaces ki wajah se dirty data save na ho.
     const title = newEvent.title.trim();
     const venue = newEvent.venue.trim();
     const description = newEvent.description.trim();
@@ -117,6 +119,7 @@ const EventsPage = () => {
         return event;
       }
 
+      // Seat available ho to direct register, warna waitlist me bhej do.
       const hasSeats = event.registeredUsers.length < event.seatLimit;
       const nextRegisteredUsers = hasSeats
         ? [...event.registeredUsers, user.id]
@@ -132,7 +135,7 @@ const EventsPage = () => {
       };
     });
 
-    // Keep backward compatibility with existing `joined` shape too.
+    // Purane data shape me `joined` use hua tha, isliye usko bhi yaha sync rakha hai.
     setEvents(
       updated.map((event) => ({
         ...event,

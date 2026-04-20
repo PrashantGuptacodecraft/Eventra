@@ -110,13 +110,6 @@ function EventModal({
                 >
                   {showQr ? "Hide QR" : "Open QR"}
                 </button>
-                <a
-                  href={qrImageUrl}
-                  download={`event-pass-${event.id}.svg`}
-                  className="btn btn-outline-primary rounded-pill px-4"
-                >
-                  Download Pass
-                </a>
               </>
             ) : isWaitlisted ? (
               <span className="badge text-bg-warning px-3 py-2 rounded-pill">

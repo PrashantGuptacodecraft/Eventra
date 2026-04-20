@@ -10,6 +10,7 @@ const Dashboard = () => {
 
   const now = new Date();
   const currentHour = now.getHours();
+  // Time ke basis par simple greeting show kar raha hu for better personal feel.
   const greeting =
     currentHour < 12
       ? "Good morning"
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const dailyTarget = 15;
   const tasksLeftForCoin = Math.max(dailyTarget - todayCompletedTasks, 0);
   const dailyCoinEarned = (user?.taskDailyRewardDates || []).includes(todayKey);
+  // Dashboard me same merged event list use ho taki static aur created events dono dikh jaye.
   const allEvents = useMemo(() => buildMergedEvents(events), [events]);
 
   const upcomingEvents = [...allEvents]
@@ -70,6 +72,7 @@ const Dashboard = () => {
         actionPath: "/tasks",
       })),
   ]
+    // Events aur tasks ko ek timeline type flow me combine karke top priorities dikha raha hu.
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(0, 6);
 
@@ -175,6 +178,7 @@ const Dashboard = () => {
   const points = user?.points || 0;
   const pointsHistory = Array.isArray(user?.pointsHistory) ? user.pointsHistory : [];
   const categorizedPoints = useMemo(() => {
+    // Points ko event vs task buckets me split kiya hai so breakdown samajhna easy ho.
     const eventEntries = pointsHistory.filter((entry) => {
       const text = `${entry.reason || ""}`.toLowerCase();
       return text.includes("event") || text.includes("hackathon") || text.includes("registered");

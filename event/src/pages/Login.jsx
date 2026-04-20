@@ -13,6 +13,7 @@ const Login = () => {
   });
 
   const handleChange = (e) => {
+    // Single handler rakha hai taki form fields easily manage ho jaye.
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -21,6 +22,8 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Yahi par login aur signup dono flow toggle ke basis par handle kar raha hu.
     if (isLogin) {
       if (login(formData.username, formData.password)) {
         navigate("/dashboard");
@@ -37,15 +40,28 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          {isLogin ? "Login" : "Sign Up"}
-        </h2>
+    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(135deg,#eef4ff_0%,#e0ecff_45%,#f8fbff_100%)] px-4 py-8">
+      <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
+        <div className="mb-6 text-center">
+          <img
+            src="/eventra-logo.jpeg"
+            alt="Eventra logo"
+            className="mx-auto mb-4 h-14 w-14 rounded-2xl object-cover shadow-sm"
+          />
+          <h2 className="text-3xl font-bold text-slate-900">
+            {isLogin ? "Login" : "Create account"}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            {isLogin
+              ? "Access your dashboard and manage your events easily."
+              : "Create your account to start managing events and tasks."}
+          </p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
+            <div className="text-left">
+              <label className="block text-sm font-semibold text-slate-700">
                 Name
               </label>
               <input
@@ -54,12 +70,12 @@ const Login = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required={!isLogin}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
               />
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
+          <div className="text-left">
+            <label className="block text-sm font-semibold text-slate-700">
               Username
             </label>
             <input
@@ -68,11 +84,11 @@ const Login = () => {
               value={formData.username}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
+          <div className="text-left">
+            <label className="block text-sm font-semibold text-slate-700">
               Password
             </label>
             <input
@@ -81,20 +97,21 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="w-full rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           >
             {isLogin ? "Login" : "Sign Up"}
           </button>
         </form>
-        <div className="mt-4 text-center">
+
+        <div className="mt-6 text-center">
           <button
             onClick={() => setIsLogin(!isLogin)}
-            className="text-indigo-600 hover:text-indigo-500"
+            className="font-semibold text-indigo-600 transition hover:text-indigo-500"
           >
             {isLogin
               ? "Need an account? Sign Up"

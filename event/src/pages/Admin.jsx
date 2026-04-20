@@ -37,6 +37,7 @@ const Admin = () => {
   }
 
   const deleteUser = (userId) => {
+    // Direct delete se pehle confirm rakh diya so accidental removal na ho.
     if (window.confirm("Delete this user?")) {
       setUsers(users.filter((u) => u.id !== userId));
       showToast("User deleted", "success");
@@ -51,6 +52,7 @@ const Admin = () => {
   };
 
   const handleEventChange = (e) => {
+    // Sare event form fields ko ek common handler se update kar raha hu.
     setEventForm({
       ...eventForm,
       [e.target.name]: e.target.value,
@@ -59,6 +61,7 @@ const Admin = () => {
 
   const createEvent = (e) => {
     e.preventDefault();
+    // Admin panel se create hua event bhi same event data shape follow karega.
     const newEvent = {
       id: Date.now(),
       ...eventForm,
@@ -101,6 +104,7 @@ const Admin = () => {
     ? Math.round((completedTasks / tasks.length) * 100)
     : 0;
   const last7Days = Array.from({ length: 7 }, (_, index) => {
+    // Last 7 days ka quick activity snapshot stats section ke liye bana raha hu.
     const date = new Date();
     date.setDate(date.getDate() - (6 - index));
     const key = date.toISOString().slice(0, 10);

@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getData, saveData, seedData } from "../utils/storage";
 
+// App start hote hi initial demo data ready rahe, isliye yaha se seed kar diya.
 seedData();
 
 const AppContext = createContext();
@@ -9,6 +10,7 @@ const AppContext = createContext();
 function ensureUserDefaults(user) {
   if (!user) return user;
 
+  // Old saved user object me kuch fields missing ho sakti hain, unko safe defaults de raha hu.
   return {
     ...user,
     points: user.points || 0,
@@ -86,12 +88,14 @@ export function AppProvider({ children }) {
     const id = Date.now();
     setToasts((current) => [...current, { id, msg, type }]);
 
+    // Toast thodi der baad auto hide ho jaye taki UI clean rahe.
     setTimeout(() => {
       setToasts((current) => current.filter((toast) => toast.id !== id));
     }, 3000);
   }
 
   function syncUserUpdate(nextUsers, userId) {
+    // Users list update hone ke baad logged-in user ko bhi sync me rakhna zaroori hai.
     const nextUser = nextUsers.find((item) => item.id === userId) || null;
     setUsers(nextUsers.map(ensureUserDefaults));
     if (user?.id === userId) {
@@ -125,6 +129,7 @@ export function AppProvider({ children }) {
 
       if (rewardDates.includes(key)) return ensureUserDefaults(item);
 
+      // Ek hi date par reward dubara na mile, isliye date track kar raha hu.
       awarded = true;
       return {
         ...appendPointsHistory(item, 2, "Completed daily 15-task goal"),
@@ -153,6 +158,7 @@ export function AppProvider({ children }) {
     const usernameTaken = users.find((item) => item.username === username);
     if (usernameTaken) return false;
 
+    // Signup ke time basic user object yahi se prepare ho raha hai.
     const newUser = ensureUserDefaults({
       id: Date.now(),
       name,

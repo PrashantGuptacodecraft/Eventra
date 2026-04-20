@@ -14,6 +14,7 @@ export default function Tasks() {
   function addTask(event) {
     event.preventDefault();
 
+    // Input trim kar raha hu taki blank ya extra-space wali task save na ho.
     const value = input.trim();
 
     if (value === "") {
@@ -59,6 +60,7 @@ export default function Tasks() {
     if (target?.done) {
       showToast("Task completed", "success");
 
+      // Daily reward ke liye aaj completed tasks dobara count kar raha hu.
       const updatedUserTasks = updated.filter((task) => task.userId === user.id);
       const todayCompleted = updatedUserTasks.filter(
         (task) => task.done && task.completedAt && getLocalDateKey(new Date(task.completedAt)) === todayKey,
@@ -92,6 +94,7 @@ export default function Tasks() {
   const dailyBonusEarned = (user?.taskDailyRewardDates || []).includes(todayKey);
 
   const sortedTasks = [...userTasks].sort((a, b) => {
+    // Pehle pending tasks, fir nearest deadline, fir latest created task order me show ho.
     if (a.done !== b.done) {
       return a.done ? 1 : -1;
     }
@@ -240,6 +243,7 @@ export default function Tasks() {
 }
 
 function getLocalDateKey(date) {
+  // Local date key use ki hai taki timezone ki wajah se daily tracking mismatch na ho.
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");

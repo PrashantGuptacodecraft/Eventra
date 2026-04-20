@@ -1,78 +1,32 @@
-<p align="center">
-  <img
-    src="./public/eventra-logo1.jpeg"
-    alt="Eventra logo"
-    width="260"
-    style="border-radius: 50%; object-fit: cover;"
-  />
-</p>
+# Eventra
 
-<h1 align="center">Eventra</h1>
+Eventra is a frontend project I built to bring event management and task tracking into one simple portal. The idea was to create a single place where users can log in, manage their work, explore events, join hackathons, and stay engaged through notes, polls, and Q&A.
 
-<p align="center">
-  <strong>Plan. Connect. Enjoy.</strong>
-</p>
+## Why I built it
 
-<p align="center">
-  A unified event and task management portal built with React and Vite for organizing tasks,
-  events, hackathons, notes, polls, and team engagement in one place.
-</p>
+I wanted to work on a project that combined productivity features with campus or community event management. Instead of keeping tasks, events, and user activity in separate places, Eventra brings them together in one dashboard-style experience.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react" alt="React 19" />
-  <img src="https://img.shields.io/badge/Vite-8-purple?style=for-the-badge&logo=vite" alt="Vite 8" />
-  <img src="https://img.shields.io/badge/Bootstrap-5-6f42c1?style=for-the-badge&logo=bootstrap" alt="Bootstrap 5" />
-  <img src="https://img.shields.io/badge/Router-React%20Router-ca4245?style=for-the-badge&logo=reactrouter" alt="React Router" />
-</p>
+## What the project includes
 
----
-
-## Overview
-
-The app is designed as a student or campus productivity portal where users can:
-
-- manage personal tasks
-- explore and join events
-- view hackathons
-- create notes
-- participate in Q&A and polls
-- track points and leaderboard progress
-
-An admin user can also manage users, events, hackathons, and view platform statistics.
-
-## Highlights
-
-- Authentication with login and signup flow
-- Dashboard with task progress, recent tasks, upcoming events, and leaderboard
-- Task management with completion tracking
-- Event listing and participation
+- Login and signup flow
+- Personal task management
+- Event listing and registration
 - Hackathon browsing
-- Notes, Q&A, poll, and profile sections
-- Admin panel for user, event, and hackathon management
-- Local storage persistence for app data
-- Light and dark theme support
+- Notes, polls, and Q&A sections
+- User profile management
+- Admin panel for managing users, events, and hackathons
+- Local storage support for saving app data in the browser
 
-## Preview
+## Tech stack
 
-Eventra combines productivity and engagement tools into one dashboard-driven experience:
-
-- personal task tracking with progress visibility
-- event discovery and participation
-- hackathon exploration and management
-- notes, polls, and Q&A collaboration
-- leaderboard-based user engagement
-- admin controls for platform oversight
-
-## Tech Stack
-
-- React 19
+- React
 - Vite
-- React Router DOM
-- Bootstrap 5
-- Tailwind CSS utilities
-- LocalStorage for frontend data persistence
+- React Router
+- Bootstrap
+- Tailwind CSS
+- LocalStorage
 
-## Project Structure
+## Project structure
 
 ```text
 event/
@@ -81,63 +35,48 @@ event/
     context/
     pages/
     utils/
+  public/
 ```
 
-## Getting Started
+## Running the project
 
-### Prerequisites
-
-- Node.js
-- npm
-
-### Installation
+Make sure Node.js and npm are installed, then run:
 
 ```bash
 cd event
 npm install
-```
-
-### Run the Development Server
-
-```bash
 npm run dev
 ```
 
-### Build for Production
+To create a production build:
 
 ```bash
 npm run build
 ```
 
-### Preview Production Build
+To preview the production build locally:
 
 ```bash
 npm run preview
 ```
 
-## Demo Credentials
+## Demo login credentials
 
-The app seeds sample users into `localStorage` on first load:
+The app creates sample users in `localStorage` when it runs for the first time.
 
 - Admin: `admin` / `admin123`
 - User: `alice` / `alice123`
 - User: `bob` / `bob123`
 
-## Data Handling
+## Notes
 
-This project currently uses browser `localStorage` instead of a backend. Seed data is created automatically when the app runs for the first time.
+- This project currently uses browser storage instead of a backend.
+- The data is seeded automatically on first load.
+- It is mainly built to demonstrate frontend structure, routing, state handling, and UI design.
 
-## Future Improvements
+## Future improvements
 
-- Connect the app to a real backend and database
-- Add role-based API authorization
-- Improve form validation
-- Add notifications and reminders
-- Add tests for core flows
-
-## Scripts
-
-- `npm run dev` starts the Vite development server
-- `npm run build` creates a production build
-- `npm run preview` previews the production build locally
-- `npm run lint` runs ESLint
+- Connect it to a backend and database
+- Add better validation
+- Improve notifications and reminders
+- Add testing for key flows
