@@ -40,6 +40,7 @@ function appendPointsHistory(user, points, reason) {
 export function AppProvider({ children }) {
   const [user, setUser] = useState(() => ensureUserDefaults(getData("loggedInUser")) || null);
   const [darkMode, setDarkMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [users, setUsers] = useState(() =>
     (getData("users") || []).map(ensureUserDefaults),
@@ -206,6 +207,8 @@ export function AppProvider({ children }) {
     toasts,
     darkMode,
     setDarkMode,
+    searchQuery,
+    setSearchQuery,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

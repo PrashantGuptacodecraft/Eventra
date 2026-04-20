@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
-import "./Profile.css";
+import "./style/Profile.css";
 
 const Profile = () => {
   const {

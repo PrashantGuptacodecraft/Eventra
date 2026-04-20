@@ -271,6 +271,61 @@
   font-weight: 700;
 }
 
+[data-theme="dark"] .profile-hero-card,
+[data-theme="dark"] .profile-main-card,
+[data-theme="dark"] .profile-stats-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(17, 24, 39, 0.96));
+  border-color: rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 56px rgba(2, 6, 23, 0.4);
+}
+
+[data-theme="dark"] .profile-hero-card {
+  background:
+    radial-gradient(circle at top left, rgba(96, 165, 250, 0.14), transparent 28%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(17, 24, 39, 0.98));
+}
+
+[data-theme="dark"] .profile-hero-content h1,
+[data-theme="dark"] .profile-card-header h2,
+[data-theme="dark"] .profile-stats-card h2,
+[data-theme="dark"] .profile-info-card p,
+[data-theme="dark"] .profile-activity-card h3,
+[data-theme="dark"] .profile-activity-item strong,
+[data-theme="dark"] .profile-history-item strong,
+[data-theme="dark"] .profile-stat-box .value {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .profile-hero-content p,
+[data-theme="dark"] .profile-card-header p,
+[data-theme="dark"] .profile-field label,
+[data-theme="dark"] .profile-switch-row label,
+[data-theme="dark"] .profile-info-card span,
+[data-theme="dark"] .profile-stat-box .label,
+[data-theme="dark"] .profile-activity-item span,
+[data-theme="dark"] .profile-history-item span,
+[data-theme="dark"] .profile-empty-text {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .profile-info-card,
+[data-theme="dark"] .profile-activity-card,
+[data-theme="dark"] .profile-stat-box {
+  background: rgba(30, 41, 59, 0.78);
+  border-color: rgba(148, 163, 184, 0.14);
+}
+
+[data-theme="dark"] .profile-input {
+  background: rgba(15, 23, 42, 0.82);
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+[data-theme="dark"] .profile-activity-item,
+[data-theme="dark"] .profile-history-item {
+  border-bottom-color: rgba(148, 163, 184, 0.12);
+}
+
 @media (max-width: 768px) {
   .profile-hero-card {
     align-items: flex-start;

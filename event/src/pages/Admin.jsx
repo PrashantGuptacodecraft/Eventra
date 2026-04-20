@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
+import "./style/Admin.css";
 
 const Admin = () => {
   const {
@@ -13,6 +14,7 @@ const Admin = () => {
     qna,
     polls,
     showToast,
+    searchQuery,
   } = useApp();
   const [activeTab, setActiveTab] = useState("users");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
@@ -29,7 +31,7 @@ const Admin = () => {
 
   if (user.role !== "admin") {
     return (
-      <div className="container-fluid px-3 px-md-4 py-4 text-center">
+      <div className="admin-page container-fluid px-3 px-md-4 py-4 text-center">
         <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
         <p>You need admin privileges to view this page.</p>
       </div>
@@ -124,9 +126,22 @@ const Admin = () => {
     .filter((item) => item.role !== "admin")
     .sort((a, b) => (b.points || 0) - (a.points || 0))
     .slice(0, 5);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  // Simple search by name
+  const visibleUsers = normalizedQuery
+    ? users.filter((member) =>
+        (member.name || "").toLowerCase().includes(normalizedQuery),
+      )
+    : users;
+  // Simple search by title
+  const visibleEvents = normalizedQuery
+    ? events.filter((event) =>
+        (event.title || "").toLowerCase().includes(normalizedQuery),
+      )
+    : events;
 
   return (
-    <div className="container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
+    <div className="admin-page container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
       <h1 className="text-3xl font-bold text-gray-800 mb-4 mb-md-5">Admin Panel</h1>
 
       <div className="mb-4 mb-md-5">
@@ -135,13 +150,13 @@ const Admin = () => {
             onClick={() => setActiveTab("users")}
             className={`px-4 py-2 rounded ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
           >
-            Users ({users.length})
+            Users ({visibleUsers.length})
           </button>
           <button
             onClick={() => setActiveTab("events")}
             className={`px-4 py-2 rounded ${activeTab === "events" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
           >
-            Events ({events.length})
+            Events ({visibleEvents.length})
           </button>
           <button
             onClick={() => setActiveTab("stats")}
@@ -167,7 +182,7 @@ const Admin = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((member) => (
+                {visibleUsers.map((member) => (
                   <tr key={member.id} className="border-b">
                     <td className="py-2">{member.name}</td>
                     <td className="py-2">{member.username}</td>
@@ -342,7 +357,7 @@ const Admin = () => {
           )}
 
           <div className="space-y-4">
-            {events.map((event) => (
+            {visibleEvents.map((event) => (
               <div key={event.id} className="border border-gray-200 rounded p-4">
                 <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                   <div>

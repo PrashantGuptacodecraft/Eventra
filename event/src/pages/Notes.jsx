@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
+import "./style/Notes.css";
 
 const Notes = () => {
-  const { user, notes, setNotes, showToast } = useApp();
+  const { user, notes, setNotes, showToast, searchQuery } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
   const [formData, setFormData] = useState({
@@ -13,6 +14,14 @@ const Notes = () => {
   });
 
   const userNotes = notes.filter((note) => note.userId === user.id);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleNotes = normalizedQuery
+    ? userNotes.filter((note) =>
+        `${note.title} ${note.content} ${note.category || ""} ${(note.tags || []).join(" ")}`
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+    : userNotes;
   const sectionCoins = userNotes.length * 2;
 
   const handleChange = (e) => {
@@ -90,11 +99,11 @@ const Notes = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="notes-page p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">📝 My Notes</h1>
-          <p className="text-gray-600">{userNotes.length} notes</p>
+          <p className="text-gray-600">{visibleNotes.length} notes</p>
           <p className="text-sm text-gray-500">Coins earned in this section: {sectionCoins}</p>
         </div>
         <button
@@ -197,7 +206,7 @@ const Notes = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {userNotes.map((note) => (
+        {visibleNotes.map((note) => (
           <div
             key={note.id}
             className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
@@ -238,14 +247,16 @@ const Notes = () => {
             </div>
           </div>
         ))}
-        {userNotes.length === 0 && (
+        {visibleNotes.length === 0 && (
           <div className="col-span-full text-center py-12">
             <div className="text-6xl mb-4">📝</div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              No notes yet
+              {normalizedQuery ? "No matching notes" : "No notes yet"}
             </h3>
             <p className="text-gray-600">
-              Click "+ New Note" to create your first note.
+              {normalizedQuery
+                ? `Try a different search for "${searchQuery}".`
+                : 'Click "+ New Note" to create your first note.'}
             </p>
           </div>
         )}

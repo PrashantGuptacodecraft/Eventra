@@ -302,6 +302,57 @@
   color: #0f172a;
 }
 
+[data-theme="dark"] .tasks-header,
+[data-theme="dark"] .progress-container,
+[data-theme="dark"] .task-input,
+[data-theme="dark"] .task,
+[data-theme="dark"] .tasks-empty,
+[data-theme="dark"] .tasks-daywise {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94), rgba(17, 24, 39, 0.96));
+  border-color: rgba(148, 163, 184, 0.18);
+  box-shadow: 0 24px 56px rgba(2, 6, 23, 0.38);
+}
+
+[data-theme="dark"] .tasks-header h2,
+[data-theme="dark"] .task-left span,
+[data-theme="dark"] .tasks-empty h3,
+[data-theme="dark"] .tasks-daywise h3,
+[data-theme="dark"] .tasks-daywise li strong,
+[data-theme="dark"] .tasks-metric-pill strong {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .tasks-header p,
+[data-theme="dark"] .tasks-coins,
+[data-theme="dark"] .tasks-coins-muted,
+[data-theme="dark"] .progress-info,
+[data-theme="dark"] .date,
+[data-theme="dark"] .tasks-empty p,
+[data-theme="dark"] .tasks-daywise p,
+[data-theme="dark"] .tasks-daywise li span,
+[data-theme="dark"] .tasks-metric-pill span {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .task-input input,
+[data-theme="dark"] .task-input select,
+[data-theme="dark"] .tasks-metric-pill,
+[data-theme="dark"] .tasks-daywise li {
+  background: rgba(30, 41, 59, 0.72);
+  border-color: rgba(148, 163, 184, 0.16);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .progress-bar {
+  background: rgba(148, 163, 184, 0.16);
+}
+
+[data-theme="dark"] .delete {
+  background: rgba(127, 29, 29, 0.26);
+  border-color: rgba(248, 113, 113, 0.28);
+  color: #fecaca;
+}
+
 @media (max-width: 900px) {
   .task-input {
     grid-template-columns: 1fr;

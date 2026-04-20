@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useApp } from "../context/AppContext";
+import "./style/Poll.css";
 
 const initialPolls = [
   {
@@ -114,7 +115,7 @@ const Poll = () => {
   };
 
   return (
-    <section className="p-4 p-md-5">
+    <section className="poll-page p-4 p-md-5">
       <div className="mx-auto" style={{ maxWidth: "920px" }}>
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
           <h1 className="h3 fw-bold mb-0">Event Polls</h1>

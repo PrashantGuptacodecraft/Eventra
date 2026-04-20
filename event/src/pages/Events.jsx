@@ -3,9 +3,10 @@ import { useApp } from "../context/AppContext";
 import EventCard from "../components/events/EventCard";
 import EventModal from "../components/events/EventModal";
 import { buildMergedEvents } from "../utils/eventData";
+import "./style/Events.css";
 
 const EventsPage = () => {
-  const { user, events, setEvents, showToast, addPoints } = useApp();
+  const { user, events, setEvents, showToast, addPoints, searchQuery } = useApp();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [filter, setFilter] = useState("All");
   const [newEvent, setNewEvent] = useState({
@@ -25,9 +26,15 @@ const EventsPage = () => {
   }, [events]);
 
   const filteredEvents = useMemo(() => {
-    if (filter === "All") return allEvents;
-    return allEvents.filter((event) => event.category === filter);
-  }, [allEvents, filter]);
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    return allEvents.filter((event) => {
+      const matchesCategory = filter === "All" || event.category === filter;
+      // Simple search by title
+      const matchesSearch = !normalizedQuery
+        || event.title.toLowerCase().includes(normalizedQuery);
+      return matchesCategory && matchesSearch;
+    });
+  }, [allEvents, filter, searchQuery]);
 
   const isRegistered = (event) => {
     if (!event || !user) {
@@ -161,7 +168,7 @@ const EventsPage = () => {
   };
 
   return (
-    <section className="p-4 p-md-5">
+    <section className="events-page p-4 p-md-5">
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <h1 className="h3 fw-bold mb-0">Events</h1>
         <span className="badge text-bg-light border">{filteredEvents.length} Events</span>

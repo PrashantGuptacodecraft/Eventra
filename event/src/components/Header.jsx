@@ -27,7 +27,16 @@ const rewardCourses = [
 ];
 
 const Header = () => {
-  const { user, logout, darkMode, setDarkMode, tasks, events } = useApp();
+  const {
+    user,
+    logout,
+    darkMode,
+    setDarkMode,
+    tasks,
+    events,
+    searchQuery,
+    setSearchQuery,
+  } = useApp();
   const [menuOpen, setMenuOpen] = useState(false);
   const [infoPanel, setInfoPanel] = useState(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -94,7 +103,10 @@ const Header = () => {
       path: "/tasks",
     }));
 
-  const notifications = [...upcomingEventNotifications, ...deadlineNotifications]
+  const notifications = [
+    ...upcomingEventNotifications,
+    ...deadlineNotifications,
+  ]
     .sort((a, b) => a.note.localeCompare(b.note))
     .slice(0, 4);
 
@@ -113,11 +125,46 @@ const Header = () => {
       <header className="header-glass px-3 py-2">
         <div className="header-shell d-flex align-items-center justify-content-between gap-3">
           <ul className="nav header-nav gap-2 mb-0">
-            <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/dashboard")}>Home</button></li>
-            <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/calendar")}>Calendar</button></li>
-            <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/qna")}>Q&A</button></li>
-            <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/notes")}>Notes</button></li>
-            <li><button className="nav-link header-link btn btn-link p-0" onClick={() => goTo("/poll")}>Poll</button></li>
+            <li>
+              <button
+                className="nav-link header-link btn btn-link p-0"
+                onClick={() => goTo("/dashboard")}
+              >
+                Home
+              </button>
+            </li>
+            <li>
+              <button
+                className="nav-link header-link btn btn-link p-0"
+                onClick={() => goTo("/calendar")}
+              >
+                Calendar
+              </button>
+            </li>
+            <li>
+              <button
+                className="nav-link header-link btn btn-link p-0"
+                onClick={() => goTo("/qna")}
+              >
+                Q&A
+              </button>
+            </li>
+            <li>
+              <button
+                className="nav-link header-link btn btn-link p-0"
+                onClick={() => goTo("/notes")}
+              >
+                Notes
+              </button>
+            </li>
+            <li>
+              <button
+                className="nav-link header-link btn btn-link p-0"
+                onClick={() => goTo("/poll")}
+              >
+                Poll
+              </button>
+            </li>
           </ul>
 
           <div className="header-actions d-flex align-items-center gap-2 ms-auto">
@@ -125,6 +172,8 @@ const Header = () => {
               type="search"
               placeholder="Search..."
               className="form-control search-box-small"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
             />
 
             <button
@@ -153,7 +202,9 @@ const Header = () => {
 
               {notificationsOpen ? (
                 <div className="dropdown-menu dropdown-menu-end show shadow-sm p-2 user-menu-dropdown">
-                  <div className="dropdown-item-text fw-bold">Notifications</div>
+                  <div className="dropdown-item-text fw-bold">
+                    Notifications
+                  </div>
                   <div className="dropdown-item-text small text-muted">
                     Upcoming events and deadlines
                   </div>
@@ -170,7 +221,9 @@ const Header = () => {
                         }}
                       >
                         <div className="fw-semibold">{notification.title}</div>
-                        <div className="small text-muted">{notification.note}</div>
+                        <div className="small text-muted">
+                          {notification.note}
+                        </div>
                       </button>
                     ))
                   ) : (
@@ -199,15 +252,26 @@ const Header = () => {
                 />
               </button>
 
-              <ul className={`dropdown-menu dropdown-menu-end shadow-sm user-menu-dropdown ${menuOpen ? "show" : ""}`}>
+              <ul
+                className={`dropdown-menu dropdown-menu-end shadow-sm user-menu-dropdown ${menuOpen ? "show" : ""}`}
+              >
                 <li className="dropdown-item-text fw-bold">
                   {user?.name || "User"}
                 </li>
                 <li className="dropdown-item-text text-muted small">
                   {user?.role === "admin" ? "Administrator" : "Student"}
                 </li>
-                <li><hr className="dropdown-divider" /></li>
-                <li><button className="dropdown-item" onClick={() => goTo("/profile")}>Profile</button></li>
+                <li>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => goTo("/profile")}
+                  >
+                    Profile
+                  </button>
+                </li>
                 <li>
                   <button
                     className="dropdown-item"
@@ -257,7 +321,9 @@ const Header = () => {
                 </li>
                 {infoPanel === "settings" ? (
                   <>
-                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
                     <li className="dropdown-item-text user-menu-panel-title">
                       Settings
                     </li>
@@ -277,7 +343,9 @@ const Header = () => {
                 ) : null}
                 {infoPanel === "faqs" ? (
                   <>
-                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
                     <li className="dropdown-item-text user-menu-panel-title">
                       FAQs
                     </li>
@@ -297,7 +365,9 @@ const Header = () => {
                 ) : null}
                 {infoPanel === "report" ? (
                   <>
-                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li>
                     <li className="dropdown-item-text user-menu-panel-title">
                       Report Issue
                     </li>
@@ -306,9 +376,14 @@ const Header = () => {
                     </li>
                   </>
                 ) : null}
-                <li><hr className="dropdown-divider" /></li>
                 <li>
-                  <button className="dropdown-item text-danger" onClick={handleLogout}>
+                  <hr className="dropdown-divider" />
+                </li>
+                <li>
+                  <button
+                    className="dropdown-item text-danger"
+                    onClick={handleLogout}
+                  >
                     Logout
                   </button>
                 </li>

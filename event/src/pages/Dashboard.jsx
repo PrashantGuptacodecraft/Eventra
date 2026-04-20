@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { buildMergedEvents } from "../utils/eventData";
+import "./style/Dashboard.css";
 
 const Dashboard = () => {
   const { user, tasks, events, users, notes } = useApp();

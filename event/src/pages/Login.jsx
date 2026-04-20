@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
+import "./style/Login.css";
 
 const Login = () => {
   const { login, signup, showToast } = useApp();
@@ -40,7 +41,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[linear-gradient(135deg,#eef4ff_0%,#e0ecff_45%,#f8fbff_100%)] px-4 py-8">
+    <div className="login-page flex min-h-screen items-center justify-center bg-[linear-gradient(135deg,#eef4ff_0%,#e0ecff_45%,#f8fbff_100%)] px-4 py-8">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
         <div className="mb-6 text-center">
           <img

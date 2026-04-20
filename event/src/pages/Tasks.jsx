@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { useApp } from "../context/AppContext";
-import "./Tasks.css";
+import "./style/Tasks.css";
 
 export default function Tasks() {
-  const { user, tasks, setTasks, showToast, awardDailyTaskCoin } = useApp();
+  const { user, tasks, setTasks, showToast, awardDailyTaskCoin, searchQuery } = useApp();
   const [input, setInput] = useState("");
   const [priority, setPriority] = useState("High");
   const [date, setDate] = useState("");
@@ -93,7 +93,16 @@ export default function Tasks() {
   const dailyRemaining = Math.max(dailyTarget - todayTaskPoints, 0);
   const dailyBonusEarned = (user?.taskDailyRewardDates || []).includes(todayKey);
 
-  const sortedTasks = [...userTasks].sort((a, b) => {
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleTasks = normalizedQuery
+    ? userTasks.filter((task) =>
+        `${task.title} ${task.priority} ${task.deadline || ""}`
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+    : userTasks;
+
+  const sortedTasks = [...visibleTasks].sort((a, b) => {
     // Pehle pending tasks, fir nearest deadline, fir latest created task order me show ho.
     if (a.done !== b.done) {
       return a.done ? 1 : -1;
@@ -116,6 +125,9 @@ export default function Tasks() {
           <div>
             <h2>Task Manager</h2>
             <p>Plan your day, complete tasks, and track progress clearly.</p>
+            {normalizedQuery ? (
+              <p className="tasks-coins-muted">Showing results for "{searchQuery}"</p>
+            ) : null}
             <p className="tasks-coins">Tasks done today: {todayTaskPoints} / {dailyTarget}</p>
             <p className="tasks-coins-muted">
               {dailyBonusEarned

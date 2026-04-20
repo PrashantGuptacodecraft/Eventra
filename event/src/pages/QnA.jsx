@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useApp } from "../context/AppContext";
+import "./style/QnA.css";
 
 const QnA = () => {
-  const { user, users, qna, setQna, showToast } = useApp();
+  const { user, users, qna, setQna, showToast, searchQuery } = useApp();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -18,6 +19,16 @@ const QnA = () => {
       count + question.answers.filter((answer) => answer.userId === user.id).length,
     0,
   );
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const visibleQuestions = normalizedQuery
+    ? qna.filter((question) =>
+        `${question.title} ${question.content} ${question.answers
+          .map((answer) => answer.content)
+          .join(" ")}`
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
+    : qna;
   // Simple section coin logic alag se calculate kiya hai taki contribution clearly dikhe.
   const sectionCoins = askedByUser * 3 + answersByUser * 5;
 
@@ -139,7 +150,7 @@ const QnA = () => {
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
+    <div className="qna-page p-4 max-w-4xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Q&A Forum</h1>
@@ -210,7 +221,7 @@ const QnA = () => {
       )}
 
       <div className="space-y-4">
-        {qna.map((question) => (
+        {visibleQuestions.map((question) => (
           <div
             key={question.id}
             className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
@@ -357,14 +368,16 @@ const QnA = () => {
             </div>
           </div>
         ))}
-        {qna.length === 0 && (
+        {visibleQuestions.length === 0 && (
           <div className="text-center py-8">
             <div className="text-4xl mb-2">?</div>
             <h3 className="text-lg font-semibold text-gray-800 mb-1">
-              No questions yet
+              {normalizedQuery ? "No matching questions" : "No questions yet"}
             </h3>
             <p className="text-gray-600 text-sm">
-              Be the first to ask a question!
+              {normalizedQuery
+                ? `Try a different search for "${searchQuery}".`
+                : "Be the first to ask a question!"}
             </p>
           </div>
         )}
