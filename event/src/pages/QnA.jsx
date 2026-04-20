@@ -18,9 +18,11 @@ const QnA = () => {
       count + question.answers.filter((answer) => answer.userId === user.id).length,
     0,
   );
+  // Simple section coin logic alag se calculate kiya hai taki contribution clearly dikhe.
   const sectionCoins = askedByUser * 3 + answersByUser * 5;
 
   const handleChange = (e) => {
+    // Ask question form ke inputs ko ek hi handler se manage kar raha hu.
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -29,6 +31,7 @@ const QnA = () => {
 
   const handleSubmitQuestion = (e) => {
     e.preventDefault();
+    // Har new question ke saath createdAt aur empty answers array store kar raha hu.
     const newQuestion = {
       id: Date.now(),
       userId: user.id,
@@ -45,6 +48,7 @@ const QnA = () => {
 
   const handleSubmitAnswer = (questionId) => {
     if (!answerContent.trim()) return;
+    // Answer ke andar upvote aur edit tracking fields start se hi rakh diye.
     const updated = qna.map((q) =>
       q.id === questionId
         ? {
@@ -73,6 +77,7 @@ const QnA = () => {
   const handleEditAnswer = (questionId, answerId) => {
     if (!editedAnswerContent.trim()) return;
 
+    // Answer edit karne par old edit history lose na ho, isliye append kar raha hu.
     const updated = qna.map((question) =>
       question.id === questionId
         ? {
@@ -107,6 +112,7 @@ const QnA = () => {
     const question = qna.find((q) => q.id === questionId);
     const answer = question?.answers.find((a) => a.id === answerId);
 
+    // Same user same answer ko dubara upvote na kar sake.
     if (answer?.upvotedBy?.includes(user.id)) {
       showToast("You already upvoted this answer", "info");
       return;

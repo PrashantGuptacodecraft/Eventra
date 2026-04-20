@@ -16,6 +16,7 @@ const Notes = () => {
   const sectionCoins = userNotes.length * 2;
 
   const handleChange = (e) => {
+    // Notes form ke liye common input handler use kiya hai.
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -25,7 +26,7 @@ const Notes = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editingNote) {
-      // Edit
+      // Edit case me old note update ho raha hai aur edit history bhi maintain kar raha hu.
       const updated = notes.map((note) =>
         note.id === editingNote.id
           ? {
@@ -49,7 +50,7 @@ const Notes = () => {
       setNotes(updated);
       showToast("Note updated", "success");
     } else {
-      // Add
+      // New note create karte time tags ko comma separated text se array me convert kar raha hu.
       const newNote = {
         id: Date.now(),
         userId: user.id,
@@ -69,6 +70,7 @@ const Notes = () => {
   };
 
   const handleEdit = (note) => {
+    // Edit pe click karne par selected note ka data form me fill ho jata hai.
     setEditingNote(note);
     setFormData({
       title: note.title,
@@ -80,6 +82,7 @@ const Notes = () => {
   };
 
   const handleDelete = (noteId) => {
+    // Delete confirm diya so note galti se remove na ho.
     if (window.confirm("Delete this note?")) {
       setNotes(notes.filter((note) => note.id !== noteId));
       showToast("Note deleted", "success");

@@ -24,6 +24,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
 
   const joinedEvents = useMemo(
+    // Profile stats me sirf wahi events count kar raha hu jahan user actually registered hai.
     () =>
       events.filter((event) =>
         (event.registeredUsers || event.joined || []).includes(user.id),
@@ -50,6 +51,7 @@ const Profile = () => {
   const pointsHistory = Array.isArray(user.pointsHistory) ? [...user.pointsHistory].reverse() : [];
 
   const toggleEditing = () => {
+    // Edit mode open hote hi current user data form me preload kar diya.
     const nextEditing = !isEditing;
     setIsEditing(nextEditing);
     if (nextEditing) {
@@ -78,10 +80,12 @@ const Profile = () => {
       username: formData.username,
     };
 
+    // Password tabhi update hoga jab user ne change password select kiya ho.
     if (changePassword && newPassword) {
       updatedUser.password = newPassword;
     }
 
+    // Duplicate username avoid karne ke liye save se pehle check laga diya.
     const existing = users.find(
       (u) => u.username === formData.username && u.id !== user.id,
     );

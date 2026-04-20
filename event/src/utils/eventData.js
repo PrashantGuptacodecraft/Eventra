@@ -67,6 +67,7 @@ const fallbackEvents = [
 ];
 
 export function normalizeEvent(event) {
+  // Different event shapes ko ek common format me la raha hu so UI simple rahe.
   const registeredUsers = Array.isArray(event.registeredUsers)
     ? event.registeredUsers
     : Array.isArray(event.joined)
@@ -76,6 +77,7 @@ export function normalizeEvent(event) {
 
   let category = event.category;
   if (!category) {
+    // Category missing ho to title/description ke text se basic guess kar raha hu.
     const text = `${event.title || ""} ${event.description || event.desc || ""}`.toLowerCase();
     if (
       text.includes("fest") ||
@@ -110,6 +112,7 @@ export function normalizeEvent(event) {
 export function buildMergedEvents(stateEvents = []) {
   const eventMap = new Map();
 
+  // Fallback events base layer hai, uske upar saved/custom events overwrite kar denge.
   fallbackEvents.forEach((event) => {
     eventMap.set(event.id, event);
   });

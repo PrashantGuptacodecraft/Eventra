@@ -10,6 +10,7 @@ const Sidebar = () => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(() => {
     try {
+      // Sidebar collapse state localStorage me save ki thi, wahi se restore kar raha hu.
       return localStorage.getItem(sidebarStorageKey) === "true";
     } catch {
       return false;
@@ -36,6 +37,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     try {
+      // User ka last sidebar preference next refresh me bhi same rahe.
       localStorage.setItem(sidebarStorageKey, String(collapsed));
     } catch {
       // ignore storage issues
@@ -43,6 +45,7 @@ const Sidebar = () => {
   }, [collapsed]);
 
   const handleNavigation = (path) => {
+    // Navigation ko separate function me rakha for cleaner button handlers.
     navigate(path);
   };
 

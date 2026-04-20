@@ -4,6 +4,7 @@ import { useApp } from "../context/AppContext";
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function toDateKey(date) {
+  // Calendar lookup ke liye consistent YYYY-MM-DD key bana raha hu.
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
@@ -20,6 +21,7 @@ function endOfMonth(date) {
 
 function startOfWeek(date) {
   const next = new Date(date);
+  // Week view Sunday se start ho isliye current day jitna offset minus kiya.
   next.setDate(next.getDate() - next.getDay());
   next.setHours(0, 0, 0, 0);
   return next;
@@ -48,6 +50,7 @@ function Calendar() {
   const userTasks = tasks.filter((task) => task.userId === user.id && task.deadline);
 
   const calendarItems = useMemo(() => {
+    // Events aur task deadlines ko ek common structure me convert karke calendar me use kar raha hu.
     const eventItems = events.map((event) => ({
       id: `event-${event.id}`,
       type: "event",
@@ -72,6 +75,7 @@ function Calendar() {
   }, [events, userTasks]);
 
   const itemsByDate = useMemo(() => {
+    // Date wise grouping se selected day aur calendar preview dono easy ho jate hain.
     return calendarItems.reduce((acc, item) => {
       const key = item.date;
       acc[key] = [...(acc[key] || []), item];
@@ -85,6 +89,7 @@ function Calendar() {
     const gridStart = startOfWeek(monthStart);
     const gridEnd = addDays(monthEnd, 6 - monthEnd.getDay());
 
+    // Month grid complete dikhane ke liye previous/next month ke filler days bhi add kiye.
     const days = [];
     for (let day = new Date(gridStart); day <= gridEnd; day = addDays(day, 1)) {
       days.push(new Date(day));
@@ -128,6 +133,7 @@ function Calendar() {
     const items = itemsByDate[toDateKey(date)] || [];
     const visible = compact ? items.slice(0, 2) : items;
 
+    // Month view me compact preview aur week view me full preview use ho raha hai.
     return (
       <div className="calendar-item-stack">
         {visible.map((item) => (

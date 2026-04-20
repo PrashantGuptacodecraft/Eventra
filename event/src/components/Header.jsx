@@ -39,6 +39,7 @@ const Header = () => {
 
   useEffect(() => {
     function handleOutsideClick(event) {
+      // Outside click par open dropdowns close ho jaye taki header clean behave kare.
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
         setInfoPanel(null);
@@ -70,6 +71,7 @@ const Header = () => {
   };
 
   const upcomingEventNotifications = events
+    // Header bell me nearest events ko quick reminder ke form me dikha raha hu.
     .filter((event) => new Date(event.date) >= new Date())
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(0, 2)
@@ -81,6 +83,7 @@ const Header = () => {
     }));
 
   const deadlineNotifications = tasks
+    // User specific pending deadlines ko bhi same notification flow me merge kiya.
     .filter((task) => task.userId === user?.id && !task.done && task.deadline)
     .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
     .slice(0, 2)
@@ -99,6 +102,7 @@ const Header = () => {
     () =>
       rewardCourses.map((course) => ({
         ...course,
+        // Coins enough honge tabhi redeem button active feel karega.
         canRedeem: points >= course.coinsNeeded,
       })),
     [points],

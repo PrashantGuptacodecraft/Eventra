@@ -10,6 +10,7 @@ function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
   const category = event.category || "Hackathon";
   const registeredCount = event.registeredUsers?.length || 0;
   const waitlistCount = event.waitlistUsers?.length || 0;
+  // Negative seats na aaye, isliye Math.max se safe count nikal raha hu.
   const seatsLeft = Math.max((event.seatLimit || 0) - registeredCount, 0);
 
   return (

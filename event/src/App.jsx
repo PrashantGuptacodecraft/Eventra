@@ -28,11 +28,13 @@ function App() {
   const { user, darkMode } = useApp();
 
   useEffect(() => {
+    // Theme switch ko HTML level par set kar raha hu so CSS and Bootstrap dono sync rahein.
     document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
     document.documentElement.setAttribute("data-bs-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
   if (!user) {
+    // Login ke bina user sirf auth route hi dekh sake, baki sab redirect ho jaye.
     return (
       <Router>
         <Routes>
@@ -50,6 +52,7 @@ function App() {
         <div className="content">
           <Header />
           <main className="content-scroll">
+            {/* Protected app routes login ke baad yahi render ho rahe hain. */}
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />

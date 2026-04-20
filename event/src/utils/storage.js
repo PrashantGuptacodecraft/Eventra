@@ -1,8 +1,9 @@
-// Simple helpers to save and load data from localStorage
+// LocalStorage helpers alag file me rakhe taki har page par same logic repeat na karna pade.
 
 export function getData(key) {
   try {
     const val = localStorage.getItem(key);
+    // JSON parse fail ho ya data na mile to safe null return kar raha hu.
     return val ? JSON.parse(val) : null;
   } catch {
     return null;
@@ -17,7 +18,7 @@ export function removeData(key) {
   localStorage.removeItem(key);
 }
 
-// Make a simple unique id
+// Simple random-ish id bana raha hu for frontend-only data entries.
 export function makeId() {
   return Date.now() + Math.floor(Math.random() * 1000);
 }
@@ -356,11 +357,12 @@ const defaultEvents = [
 function mergeById(existingItems, defaultItems) {
   const existing = Array.isArray(existingItems) ? existingItems : [];
   const seenIds = new Set(existing.map((item) => item.id));
+  // Jo default items missing hain sirf unko merge karna hai, existing user data ko touch nahi karna.
   const missingDefaults = defaultItems.filter((item) => !seenIds.has(item.id));
   return [...existing, ...missingDefaults];
 }
 
-// Seed starting data when user first opens the app
+// First run par initial demo data save hoga; next runs me sirf missing defaults merge honge.
 export function seedData() {
   const seeded = getData("seeded");
 

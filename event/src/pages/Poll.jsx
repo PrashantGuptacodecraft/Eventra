@@ -25,11 +25,13 @@ const Poll = () => {
   const [newQuestion, setNewQuestion] = useState("");
   const [newOptions, setNewOptions] = useState(["", ""]);
   const pollList = useMemo(
+    // Agar user-created polls nahi hain to initial demo polls show kar raha hu.
     () => (Array.isArray(polls) && polls.length > 0 ? polls : initialPolls),
     [polls],
   );
 
   const addOptionField = () => {
+    // Poll options ko max 5 tak hi allow kiya hai UI simple rakhne ke liye.
     if (newOptions.length >= 5) return;
     setNewOptions((prev) => [...prev, ""]);
   };
@@ -61,6 +63,7 @@ const Poll = () => {
       return;
     }
 
+    // Same option repeat na ho isliye lowercase unique check use kiya.
     const uniqueOptions = [...new Set(cleanOptions.map((o) => o.toLowerCase()))];
     if (uniqueOptions.length !== cleanOptions.length) {
       showToast("Options must be unique", "error");
@@ -90,6 +93,7 @@ const Poll = () => {
       prev.map((poll) => {
         if (poll.id !== pollId) return poll;
 
+        // Ek user ek hi poll me sirf ek baar vote kar sake.
         const votedOption = poll.userVotes?.[user.id];
         if (votedOption !== undefined) {
           showToast("You already voted in this poll", "info");
