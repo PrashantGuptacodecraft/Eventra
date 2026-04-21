@@ -40,7 +40,7 @@ const QnA = () => {
     visibleQuestions = qna;
   }
   
-  // Calculate section coinss
+  // Calculate section coins
   const sectionCoins = askedByUser * 3 + answersByUser * 5;
 
   const handleChange = (e) => {
