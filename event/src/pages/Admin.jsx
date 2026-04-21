@@ -91,7 +91,8 @@ const Admin = () => {
   };
 
   const totalRegisteredUsers = events.reduce(
-    (count, event) => count + (event.registeredUsers?.length || event.joined?.length || 0),
+    (count, event) =>
+      count + (event.registeredUsers?.length || event.joined?.length || 0),
     0,
   );
   const totalAvailableSeats = events.reduce(
@@ -114,7 +115,9 @@ const Admin = () => {
       label: date.toLocaleDateString(undefined, { weekday: "short" }),
       key,
       users: users.filter((item) => {
-        const history = Array.isArray(item.pointsHistory) ? item.pointsHistory : [];
+        const history = Array.isArray(item.pointsHistory)
+          ? item.pointsHistory
+          : [];
         return history.some((entry) => (entry.createdAt || "").startsWith(key));
       }).length,
       tasks: tasks.filter(
@@ -142,7 +145,9 @@ const Admin = () => {
 
   return (
     <div className="admin-page container-fluid px-3 px-md-4 px-xl-5 py-4 py-md-5">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4 mb-md-5">Admin Panel</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-4 mb-md-5">
+        Admin Panel
+      </h1>
 
       <div className="mb-4 mb-md-5">
         <nav className="d-flex gap-2 gap-md-3 flex-wrap">
@@ -219,7 +224,10 @@ const Admin = () => {
           </div>
 
           {showCreateEvent && (
-            <form onSubmit={createEvent} className="mb-6 p-4 bg-gray-50 rounded">
+            <form
+              onSubmit={createEvent}
+              className="mb-6 p-4 bg-gray-50 rounded"
+            >
               <h3 className="text-lg font-semibold mb-4">Create New Event</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -358,11 +366,16 @@ const Admin = () => {
 
           <div className="space-y-4">
             {visibleEvents.map((event) => (
-              <div key={event.id} className="border border-gray-200 rounded p-4">
+              <div
+                key={event.id}
+                className="border border-gray-200 rounded p-4"
+              >
                 <div className="d-flex justify-content-between align-items-start gap-3 flex-wrap">
                   <div>
                     <h3 className="font-semibold">{event.title}</h3>
-                    <p className="text-sm text-gray-600">{event.desc || event.description}</p>
+                    <p className="text-sm text-gray-600">
+                      {event.desc || event.description}
+                    </p>
                     <p className="text-sm text-gray-500">
                       Category: {event.category || "Hackathon"}
                     </p>
@@ -373,13 +386,23 @@ const Admin = () => {
                       Location: {event.location || event.venue}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Joined: {event.registeredUsers?.length || event.joined?.length || 0}
+                      Joined:{" "}
+                      {event.registeredUsers?.length ||
+                        event.joined?.length ||
+                        0}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Seats: {event.registeredUsers?.length || event.joined?.length || 0} / {event.seatLimit || 50}
+                      Seats:{" "}
+                      {event.registeredUsers?.length ||
+                        event.joined?.length ||
+                        0}{" "}
+                      / {event.seatLimit || 50}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Deadline: {new Date(event.registrationDeadline || event.date).toLocaleDateString()}
+                      Deadline:{" "}
+                      {new Date(
+                        event.registrationDeadline || event.date,
+                      ).toLocaleDateString()}
                     </p>
                   </div>
                   <button
@@ -400,35 +423,51 @@ const Admin = () => {
           <h2 className="text-xl font-semibold mb-4">Platform Statistics</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div className="text-center p-4 bg-blue-50 rounded">
-              <div className="text-2xl font-bold text-blue-600">{users.length}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {users.length}
+              </div>
               <div className="text-sm text-gray-600">Total Users</div>
             </div>
             <div className="text-center p-4 bg-green-50 rounded">
-              <div className="text-2xl font-bold text-green-600">{tasks.length}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {tasks.length}
+              </div>
               <div className="text-sm text-gray-600">Total Tasks</div>
             </div>
             <div className="text-center p-4 bg-yellow-50 rounded">
-              <div className="text-2xl font-bold text-yellow-600">{events.length}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {events.length}
+              </div>
               <div className="text-sm text-gray-600">Total Events</div>
             </div>
             <div className="text-center p-4 bg-indigo-50 rounded">
-              <div className="text-2xl font-bold text-indigo-600">{notes.length}</div>
+              <div className="text-2xl font-bold text-indigo-600">
+                {notes.length}
+              </div>
               <div className="text-sm text-gray-600">Total Notes</div>
             </div>
             <div className="text-center p-4 bg-pink-50 rounded">
-              <div className="text-2xl font-bold text-pink-600">{qna.length}</div>
+              <div className="text-2xl font-bold text-pink-600">
+                {qna.length}
+              </div>
               <div className="text-sm text-gray-600">Total Questions</div>
             </div>
             <div className="text-center p-4 bg-orange-50 rounded">
-              <div className="text-2xl font-bold text-orange-600">{participationRate}%</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {participationRate}%
+              </div>
               <div className="text-sm text-gray-600">Event Participation</div>
             </div>
             <div className="text-center p-4 bg-emerald-50 rounded">
-              <div className="text-2xl font-bold text-emerald-600">{completionRate}%</div>
+              <div className="text-2xl font-bold text-emerald-600">
+                {completionRate}%
+              </div>
               <div className="text-sm text-gray-600">Task Completion</div>
             </div>
             <div className="text-center p-4 bg-sky-50 rounded">
-              <div className="text-2xl font-bold text-sky-600">{polls.length}</div>
+              <div className="text-2xl font-bold text-sky-600">
+                {polls.length}
+              </div>
               <div className="text-sm text-gray-600">Total Polls</div>
             </div>
           </div>
@@ -443,10 +482,16 @@ const Admin = () => {
                     className="d-flex justify-content-between align-items-center bg-white border rounded p-3"
                   >
                     <div>
-                      <div className="font-semibold">#{index + 1} {member.name}</div>
-                      <div className="text-sm text-gray-500">@{member.username}</div>
+                      <div className="font-semibold">
+                        #{index + 1} {member.name}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        @{member.username}
+                      </div>
                     </div>
-                    <div className="font-bold text-orange-600">{member.points || 0} pts</div>
+                    <div className="font-bold text-orange-600">
+                      {member.points || 0} pts
+                    </div>
                   </div>
                 ))}
               </div>

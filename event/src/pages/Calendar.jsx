@@ -51,37 +51,63 @@ function Calendar() {
   const userTasks = tasks.filter((task) => task.userId === user.id && task.deadline);
 
   const calendarItems = useMemo(() => {
-    // Events aur task deadlines ko ek common structure me convert karke calendar me use kar raha hu.
-    const eventItems = events.map((event) => ({
-      id: `event-${event.id}`,
-      type: "event",
-      title: event.title,
-      date: event.date,
-      detail: event.location || event.venue || "Location TBD",
-      description: event.desc || event.description || "No description available.",
-    }));
+    // Convert events to calendar items
+    const eventItems = [];
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      const location = event.location || event.venue || "Location TBD";
+      const description = event.desc || event.description || "No description available.";
+      eventItems.push({
+        id: "event-" + event.id,
+        type: "event",
+        title: event.title,
+        date: event.date,
+        detail: location,
+        description: description,
+      });
+    }
 
-    const taskItems = userTasks.map((task) => ({
-      id: `task-${task.id}`,
-      type: "deadline",
-      title: task.title,
-      date: task.deadline,
-      detail: `Priority: ${task.priority}`,
-      description: task.done ? "Completed task" : "Task deadline",
-    }));
+    // Convert user tasks to calendar items
+    const taskItems = [];
+    for (let i = 0; i < userTasks.length; i++) {
+      const task = userTasks[i];
+      const taskDesc = task.done ? "Completed task" : "Task deadline";
+      taskItems.push({
+        id: "task-" + task.id,
+        type: "deadline",
+        title: task.title,
+        date: task.deadline,
+        detail: "Priority: " + task.priority,
+        description: taskDesc,
+      });
+    }
 
-    return [...eventItems, ...taskItems].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
+    // Combine and sort
+    const combined = [];
+    for (let i = 0; i < eventItems.length; i++) {
+      combined.push(eventItems[i]);
+    }
+    for (let i = 0; i < taskItems.length; i++) {
+      combined.push(taskItems[i]);
+    }
+    
+    combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+    return combined;
   }, [events, userTasks]);
 
   const itemsByDate = useMemo(() => {
-    // Date wise grouping se selected day aur calendar preview dono easy ho jate hain.
-    return calendarItems.reduce((acc, item) => {
+    // Group items by date
+    const grouped = {};
+    for (let i = 0; i < calendarItems.length; i++) {
+      const item = calendarItems[i];
       const key = item.date;
-      acc[key] = [...(acc[key] || []), item];
-      return acc;
-    }, {});
+      if (grouped[key]) {
+        grouped[key].push(item);
+      } else {
+        grouped[key] = [item];
+      }
+    }
+    return grouped;
   }, [calendarItems]);
 
   const monthDays = useMemo(() => {
@@ -90,10 +116,12 @@ function Calendar() {
     const gridStart = startOfWeek(monthStart);
     const gridEnd = addDays(monthEnd, 6 - monthEnd.getDay());
 
-    // Month grid complete dikhane ke liye previous/next month ke filler days bhi add kiye.
+    // Build array of days for calendar grid
     const days = [];
-    for (let day = new Date(gridStart); day <= gridEnd; day = addDays(day, 1)) {
+    let day = new Date(gridStart);
+    while (day <= gridEnd) {
       days.push(new Date(day));
+      day = addDays(day, 1);
     }
     return days;
   }, [currentDate]);

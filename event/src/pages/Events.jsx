@@ -6,7 +6,8 @@ import { buildMergedEvents } from "../utils/eventData";
 import "./style/Events.css";
 
 const EventsPage = () => {
-  const { user, events, setEvents, showToast, addPoints, searchQuery } = useApp();
+  const { user, events, setEvents, showToast, addPoints, searchQuery } =
+    useApp();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [filter, setFilter] = useState("All");
   const [newEvent, setNewEvent] = useState({
@@ -30,8 +31,8 @@ const EventsPage = () => {
     return allEvents.filter((event) => {
       const matchesCategory = filter === "All" || event.category === filter;
       // Simple search by title
-      const matchesSearch = !normalizedQuery
-        || event.title.toLowerCase().includes(normalizedQuery);
+      const matchesSearch =
+        !normalizedQuery || event.title.toLowerCase().includes(normalizedQuery);
       return matchesCategory && matchesSearch;
     });
   }, [allEvents, filter, searchQuery]);
@@ -155,7 +156,8 @@ const EventsPage = () => {
     );
 
     if (selectedEvent && selectedEvent.id === targetEvent.id) {
-      const freshSelected = updated.find((event) => event.id === targetEvent.id) || null;
+      const freshSelected =
+        updated.find((event) => event.id === targetEvent.id) || null;
       setSelectedEvent(freshSelected);
     }
     const wasRegistered = updated.find((event) => event.id === targetEvent.id);
@@ -171,7 +173,9 @@ const EventsPage = () => {
     <section className="events-page p-4 p-md-5">
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <h1 className="h3 fw-bold mb-0">Events</h1>
-        <span className="badge text-bg-light border">{filteredEvents.length} Events</span>
+        <span className="badge text-bg-light border">
+          {filteredEvents.length} Events
+        </span>
       </div>
 
       <div className="d-flex gap-2 mb-4 overflow-auto pb-2">
@@ -253,7 +257,10 @@ const EventsPage = () => {
                 placeholder="Seat Limit"
                 value={newEvent.seatLimit}
                 onChange={(e) =>
-                  setNewEvent((prev) => ({ ...prev, seatLimit: e.target.value }))
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    seatLimit: e.target.value,
+                  }))
                 }
               />
             </div>
@@ -277,7 +284,10 @@ const EventsPage = () => {
                 placeholder="Description"
                 value={newEvent.description}
                 onChange={(e) =>
-                  setNewEvent((prev) => ({ ...prev, description: e.target.value }))
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
                 }
               />
             </div>

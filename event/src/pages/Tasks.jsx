@@ -44,27 +44,48 @@ export default function Tasks() {
 
   function toggleComplete(id) {
     const todayKey = getLocalDateKey(new Date());
-    const updated = tasks.map((task) =>
-      task.id === id
-        ? {
-            ...task,
-            done: !task.done,
-            completedAt: !task.done ? new Date().toISOString() : null,
-          }
-        : task,
-    );
+    // Update the task completion status
+    const updated = [];
+    let targetTask = null;
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      if (task.id === id) {
+        const newDone = !task.done;
+        const newTask = {
+          ...task,
+          done: newDone,
+          completedAt: newDone ? new Date().toISOString() : null,
+        };
+        updated.push(newTask);
+        targetTask = newTask;
+      } else {
+        updated.push(task);
+      }
+    }
 
     setTasks(updated);
 
-    const target = updated.find((task) => task.id === id);
-    if (target?.done) {
+    if (targetTask && targetTask.done) {
       showToast("Task completed", "success");
 
-      // Daily reward ke liye aaj completed tasks dobara count kar raha hu.
-      const updatedUserTasks = updated.filter((task) => task.userId === user.id);
-      const todayCompleted = updatedUserTasks.filter(
-        (task) => task.done && task.completedAt && getLocalDateKey(new Date(task.completedAt)) === todayKey,
-      ).length;
+      // Count today completed tasks for daily reward
+      const updatedUserTasks = [];
+      for (let i = 0; i < updated.length; i++) {
+        if (updated[i].userId === user.id) {
+          updatedUserTasks.push(updated[i]);
+        }
+      }
+
+      let todayCompleted = 0;
+      for (let i = 0; i < updatedUserTasks.length; i++) {
+        const task = updatedUserTasks[i];
+        if (task.done && task.completedAt) {
+          const taskDate = getLocalDateKey(new Date(task.completedAt));
+          if (taskDate === todayKey) {
+            todayCompleted++;
+          }
+        }
+      }
 
       if (todayCompleted >= 15) {
         const awarded = awardDailyTaskCoin(todayKey);
@@ -80,27 +101,39 @@ export default function Tasks() {
   const pendingCount = totalTasks - completedCount;
   const percentage = totalTasks === 0 ? 0 : Math.round((completedCount / totalTasks) * 100);
   const todayKey = getLocalDateKey(new Date());
-  const taskPointsByDay = userTasks
-    .filter((task) => task.done && task.completedAt)
-    .reduce((acc, task) => {
+  
+  // Count completed tasks by day
+  const taskPointsByDay = {};
+  for (let i = 0; i < userTasks.length; i++) {
+    const task = userTasks[i];
+    if (task.done && task.completedAt) {
       const key = getLocalDateKey(new Date(task.completedAt));
-      acc[key] = (acc[key] || 0) + 1;
-      return acc;
-    }, {});
+      if (taskPointsByDay[key]) {
+        taskPointsByDay[key] = taskPointsByDay[key] + 1;
+      } else {
+        taskPointsByDay[key] = 1;
+      }
+    }
+  }
 
   const todayTaskPoints = taskPointsByDay[todayKey] || 0;
   const dailyTarget = 15;
   const dailyRemaining = Math.max(dailyTarget - todayTaskPoints, 0);
   const dailyBonusEarned = (user?.taskDailyRewardDates || []).includes(todayKey);
 
+  // Simple search by title
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const visibleTasks = normalizedQuery
-    ? userTasks.filter((task) =>
-        `${task.title} ${task.priority} ${task.deadline || ""}`
-          .toLowerCase()
-          .includes(normalizedQuery),
-      )
-    : userTasks;
+  let visibleTasks = [];
+  if (normalizedQuery) {
+    for (let i = 0; i < userTasks.length; i++) {
+      const task = userTasks[i];
+      if (task.title.toLowerCase().includes(normalizedQuery)) {
+        visibleTasks.push(task);
+      }
+    }
+  } else {
+    visibleTasks = userTasks;
+  }
 
   const sortedTasks = [...visibleTasks].sort((a, b) => {
     // Pehle pending tasks, fir nearest deadline, fir latest created task order me show ho.

@@ -67,24 +67,26 @@ const fallbackEvents = [
 ];
 
 export function normalizeEvent(event) {
-  // Different event shapes ko ek common format me la raha hu so UI simple rahe.
-  const registeredUsers = Array.isArray(event.registeredUsers)
-    ? event.registeredUsers
-    : Array.isArray(event.joined)
-      ? event.joined
-      : [];
-  const waitlistUsers = Array.isArray(event.waitlistUsers) ? event.waitlistUsers : [];
+  // Get registered users
+  let registeredUsers = [];
+  if (Array.isArray(event.registeredUsers)) {
+    registeredUsers = event.registeredUsers;
+  } else if (Array.isArray(event.joined)) {
+    registeredUsers = event.joined;
+  }
+  
+  // Get waitlist users
+  let waitlistUsers = [];
+  if (Array.isArray(event.waitlistUsers)) {
+    waitlistUsers = event.waitlistUsers;
+  }
 
+  // Determine category
   let category = event.category;
   if (!category) {
-    // Category missing ho to title/description ke text se basic guess kar raha hu.
-    const text = `${event.title || ""} ${event.description || event.desc || ""}`.toLowerCase();
-    if (
-      text.includes("fest") ||
-      text.includes("cultural") ||
-      text.includes("music") ||
-      text.includes("dance")
-    ) {
+    const text = (event.title || "") + " " + (event.description || event.desc || "");
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes("fest") || lowerText.includes("cultural") || lowerText.includes("music") || lowerText.includes("dance")) {
       category = "Fest";
     } else {
       category = "Hackathon";
@@ -94,7 +96,7 @@ export function normalizeEvent(event) {
   return {
     id: event.id,
     title: event.title,
-    category,
+    category: category,
     date: event.date,
     venue: event.venue || event.location || "TBD",
     location: event.location || event.venue || "TBD",

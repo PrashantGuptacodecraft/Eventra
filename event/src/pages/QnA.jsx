@@ -14,22 +14,33 @@ const QnA = () => {
   const [editingAnswer, setEditingAnswer] = useState(null);
   const [editedAnswerContent, setEditedAnswerContent] = useState("");
   const askedByUser = qna.filter((question) => question.userId === user.id).length;
-  const answersByUser = qna.reduce(
-    (count, question) =>
-      count + question.answers.filter((answer) => answer.userId === user.id).length,
-    0,
-  );
+  
+  // Count answers by user
+  let answersByUser = 0;
+  for (let i = 0; i < qna.length; i++) {
+    const question = qna[i];
+    for (let j = 0; j < question.answers.length; j++) {
+      if (question.answers[j].userId === user.id) {
+        answersByUser++;
+      }
+    }
+  }
+  
+  // Simple search by title
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const visibleQuestions = normalizedQuery
-    ? qna.filter((question) =>
-        `${question.title} ${question.content} ${question.answers
-          .map((answer) => answer.content)
-          .join(" ")}`
-          .toLowerCase()
-          .includes(normalizedQuery),
-      )
-    : qna;
-  // Simple section coin logic alag se calculate kiya hai taki contribution clearly dikhe.
+  let visibleQuestions = [];
+  if (normalizedQuery) {
+    for (let i = 0; i < qna.length; i++) {
+      const question = qna[i];
+      if (question.title.toLowerCase().includes(normalizedQuery)) {
+        visibleQuestions.push(question);
+      }
+    }
+  } else {
+    visibleQuestions = qna;
+  }
+  
+  // Calculate section coins
   const sectionCoins = askedByUser * 3 + answersByUser * 5;
 
   const handleChange = (e) => {
@@ -59,26 +70,37 @@ const QnA = () => {
 
   const handleSubmitAnswer = (questionId) => {
     if (!answerContent.trim()) return;
-    // Answer ke andar upvote aur edit tracking fields start se hi rakh diye.
-    const updated = qna.map((q) =>
-      q.id === questionId
-        ? {
-            ...q,
-            answers: [
-              ...q.answers,
-              {
-                id: Date.now(),
-                userId: user.id,
-                content: answerContent,
-                upvotes: 0,
-                upvotedBy: [],
-                editHistory: [],
-                createdAt: new Date().toISOString(),
-              },
-            ],
-          }
-        : q,
-    );
+    
+    // Create new answer
+    const newAnswer = {
+      id: Date.now(),
+      userId: user.id,
+      content: answerContent,
+      upvotes: 0,
+      upvotedBy: [],
+      editHistory: [],
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Update the question with new answer
+    const updated = [];
+    for (let i = 0; i < qna.length; i++) {
+      const q = qna[i];
+      if (q.id === questionId) {
+        const newAnswers = [];
+        for (let j = 0; j < q.answers.length; j++) {
+          newAnswers.push(q.answers[j]);
+        }
+        newAnswers.push(newAnswer);
+        updated.push({
+          ...q,
+          answers: newAnswers,
+        });
+      } else {
+        updated.push(q);
+      }
+    }
+    
     setQna(updated);
     showToast("Answer posted", "success");
     setAnsweringQuestion(null);

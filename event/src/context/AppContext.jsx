@@ -10,30 +10,50 @@ const AppContext = createContext();
 function ensureUserDefaults(user) {
   if (!user) return user;
 
-  // Old saved user object me kuch fields missing ho sakti hain, unko safe defaults de raha hu.
+  // Set default values for missing fields
+  let taskDates = [];
+  if (Array.isArray(user.taskDailyRewardDates)) {
+    taskDates = user.taskDailyRewardDates;
+  }
+  
+  let history = [];
+  if (Array.isArray(user.pointsHistory)) {
+    history = user.pointsHistory;
+  }
+
   return {
     ...user,
     points: user.points || 0,
-    taskDailyRewardDates: Array.isArray(user.taskDailyRewardDates)
-      ? user.taskDailyRewardDates
-      : [],
-    pointsHistory: Array.isArray(user.pointsHistory) ? user.pointsHistory : [],
+    taskDailyRewardDates: taskDates,
+    pointsHistory: history,
   };
 }
 
 function appendPointsHistory(user, points, reason) {
+  const userWithDefaults = ensureUserDefaults(user);
+  const currentPoints = user.points || 0;
+  
+  // Create new history entry
+  const newEntry = {
+    id: Date.now() + Math.floor(Math.random() * 1000),
+    points: points,
+    reason: reason,
+    createdAt: new Date().toISOString(),
+  };
+  
+  // Build new history array
+  let newHistory = [];
+  if (Array.isArray(userWithDefaults.pointsHistory)) {
+    for (let i = 0; i < userWithDefaults.pointsHistory.length; i++) {
+      newHistory.push(userWithDefaults.pointsHistory[i]);
+    }
+  }
+  newHistory.push(newEntry);
+
   return {
-    ...ensureUserDefaults(user),
-    points: (user.points || 0) + points,
-    pointsHistory: [
-      ...(Array.isArray(user.pointsHistory) ? user.pointsHistory : []),
-      {
-        id: Date.now() + Math.floor(Math.random() * 1000),
-        points,
-        reason,
-        createdAt: new Date().toISOString(),
-      },
-    ],
+    ...userWithDefaults,
+    points: currentPoints + points,
+    pointsHistory: newHistory,
   };
 }
 
@@ -87,19 +107,47 @@ export function AppProvider({ children }) {
 
   function showToast(msg, type = "info") {
     const id = Date.now();
-    setToasts((current) => [...current, { id, msg, type }]);
+    setToasts((current) => {
+      const newToasts = [];
+      for (let i = 0; i < current.length; i++) {
+        newToasts.push(current[i]);
+      }
+      newToasts.push({ id: id, msg: msg, type: type });
+      return newToasts;
+    });
 
-    // Toast thodi der baad auto hide ho jaye taki UI clean rahe.
+    // Auto hide toast after 3 seconds
     setTimeout(() => {
-      setToasts((current) => current.filter((toast) => toast.id !== id));
+      setToasts((current) => {
+        const filtered = [];
+        for (let i = 0; i < current.length; i++) {
+          if (current[i].id !== id) {
+            filtered.push(current[i]);
+          }
+        }
+        return filtered;
+      });
     }, 3000);
   }
 
   function syncUserUpdate(nextUsers, userId) {
-    // Users list update hone ke baad logged-in user ko bhi sync me rakhna zaroori hai.
-    const nextUser = nextUsers.find((item) => item.id === userId) || null;
-    setUsers(nextUsers.map(ensureUserDefaults));
-    if (user?.id === userId) {
+    // Find the updated user
+    let nextUser = null;
+    for (let i = 0; i < nextUsers.length; i++) {
+      if (nextUsers[i].id === userId) {
+        nextUser = nextUsers[i];
+        break;
+      }
+    }
+    
+    // Ensure all users have defaults
+    const ensuredUsers = [];
+    for (let i = 0; i < nextUsers.length; i++) {
+      ensuredUsers.push(ensureUserDefaults(nextUsers[i]));
+    }
+    
+    setUsers(ensuredUsers);
+    if (user && user.id === userId) {
       setUser(nextUser ? ensureUserDefaults(nextUser) : null);
     }
     return nextUser;
@@ -108,9 +156,16 @@ export function AppProvider({ children }) {
   function addPoints(points, reason = "Activity reward") {
     if (!user) return;
 
-    const nextUsers = users.map((item) =>
-      item.id === user.id ? appendPointsHistory(item, points, reason) : ensureUserDefaults(item),
-    );
+    // Update all users
+    const nextUsers = [];
+    for (let i = 0; i < users.length; i++) {
+      const item = users[i];
+      if (item.id === user.id) {
+        nextUsers.push(appendPointsHistory(item, points, reason));
+      } else {
+        nextUsers.push(ensureUserDefaults(item));
+      }
+    }
 
     syncUserUpdate(nextUsers, user.id);
   }
@@ -121,33 +176,56 @@ export function AppProvider({ children }) {
     const key = dateKey || new Date().toISOString().slice(0, 10);
     let awarded = false;
 
-    const nextUsers = users.map((item) => {
-      if (item.id !== user.id) return ensureUserDefaults(item);
+    // Update all users for daily task coin award
+    const nextUsers = [];
+    for (let i = 0; i < users.length; i++) {
+      const item = users[i];
+      if (item.id !== user.id) {
+        nextUsers.push(ensureUserDefaults(item));
+      } else {
+        // Check if already awarded
+        const rewardDates = Array.isArray(item.taskDailyRewardDates) ? item.taskDailyRewardDates : [];
+        let alreadyAwarded = false;
+        for (let j = 0; j < rewardDates.length; j++) {
+          if (rewardDates[j] === key) {
+            alreadyAwarded = true;
+            break;
+          }
+        }
+        
+        if (!alreadyAwarded) {
+          awarded = true;
+          // Add date to reward dates and add points
+          const newRewardDates = [];
+          for (let j = 0; j < rewardDates.length; j++) {
+            newRewardDates.push(rewardDates[j]);
+          }
+          newRewardDates.push(key);
+          
+          const updatedItem = appendPointsHistory(item, 2, "Daily task goal completed +2");
+          updatedItem.taskDailyRewardDates = newRewardDates;
+          nextUsers.push(updatedItem);
+        } else {
+          nextUsers.push(ensureUserDefaults(item));
+        }
+      }
+    }
 
-      const rewardDates = Array.isArray(item.taskDailyRewardDates)
-        ? item.taskDailyRewardDates
-        : [];
+    if (awarded) {
+      syncUserUpdate(nextUsers, user.id);
+    }
 
-      if (rewardDates.includes(key)) return ensureUserDefaults(item);
-
-      // Ek hi date par reward dubara na mile, isliye date track kar raha hu.
-      awarded = true;
-      return {
-        ...appendPointsHistory(item, 2, "Completed daily 15-task goal"),
-        taskDailyRewardDates: [...rewardDates, key],
-      };
-    });
-
-    if (!awarded) return false;
-
-    syncUserUpdate(nextUsers, user.id);
-    return true;
+    return awarded;
   }
 
   function login(username, password) {
-    const foundUser = users.find(
-      (item) => item.username === username && item.password === password,
-    );
+    let foundUser = null;
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].username === username && users[i].password === password) {
+        foundUser = users[i];
+        break;
+      }
+    }
 
     if (!foundUser) return false;
 

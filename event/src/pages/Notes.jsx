@@ -14,14 +14,20 @@ const Notes = () => {
   });
 
   const userNotes = notes.filter((note) => note.userId === user.id);
+  
+  // Simple search by title
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const visibleNotes = normalizedQuery
-    ? userNotes.filter((note) =>
-        `${note.title} ${note.content} ${note.category || ""} ${(note.tags || []).join(" ")}`
-          .toLowerCase()
-          .includes(normalizedQuery),
-      )
-    : userNotes;
+  let visibleNotes = [];
+  if (normalizedQuery) {
+    for (let i = 0; i < userNotes.length; i++) {
+      const note = userNotes[i];
+      if (note.title.toLowerCase().includes(normalizedQuery)) {
+        visibleNotes.push(note);
+      }
+    }
+  } else {
+    visibleNotes = userNotes;
+  }
   const sectionCoins = userNotes.length * 2;
 
   const handleChange = (e) => {
@@ -34,40 +40,60 @@ const Notes = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Parse tags from comma separated text
+    const tagsArray = [];
+    const tagsText = formData.tags.split(",");
+    for (let i = 0; i < tagsText.length; i++) {
+      const tag = tagsText[i].trim();
+      if (tag) {
+        tagsArray.push(tag);
+      }
+    }
+    
     if (editingNote) {
-      // Edit case me old note update ho raha hai aur edit history bhi maintain kar raha hu.
-      const updated = notes.map((note) =>
-        note.id === editingNote.id
-          ? {
-              ...note,
-              ...formData,
-              tags: formData.tags
-                .split(",")
-                .map((tag) => tag.trim())
-                .filter(Boolean),
-              editHistory: [
-                ...(Array.isArray(note.editHistory) ? note.editHistory : []),
-                {
-                  id: Date.now(),
-                  editedAt: new Date().toISOString(),
-                  summary: "Note content updated",
-                },
-              ],
+      // Update existing note
+      const updated = [];
+      for (let i = 0; i < notes.length; i++) {
+        const note = notes[i];
+        if (note.id === editingNote.id) {
+          // Create edit history entry
+          const newEditHistory = [];
+          if (Array.isArray(note.editHistory)) {
+            for (let j = 0; j < note.editHistory.length; j++) {
+              newEditHistory.push(note.editHistory[j]);
             }
-          : note,
-      );
+          }
+          newEditHistory.push({
+            id: Date.now(),
+            editedAt: new Date().toISOString(),
+            summary: "Note content updated",
+          });
+          
+          const updatedNote = {
+            ...note,
+            title: formData.title,
+            content: formData.content,
+            category: formData.category,
+            tags: tagsArray,
+            editHistory: newEditHistory,
+          };
+          updated.push(updatedNote);
+        } else {
+          updated.push(note);
+        }
+      }
       setNotes(updated);
       showToast("Note updated", "success");
     } else {
-      // New note create karte time tags ko comma separated text se array me convert kar raha hu.
+      // Create new note
       const newNote = {
         id: Date.now(),
         userId: user.id,
-        ...formData,
-        tags: formData.tags
-          .split(",")
-          .map((tag) => tag.trim())
-          .filter(Boolean),
+        title: formData.title,
+        content: formData.content,
+        category: formData.category,
+        tags: tagsArray,
         editHistory: [],
       };
       setNotes([...notes, newNote]);

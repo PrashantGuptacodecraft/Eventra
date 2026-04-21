@@ -90,28 +90,49 @@ const Poll = () => {
   const vote = (pollId, optionIndex) => {
     if (!user) return;
 
-    setPolls((prev) =>
-      prev.map((poll) => {
-        if (poll.id !== pollId) return poll;
-
-        // Ek user ek hi poll me sirf ek baar vote kar sake.
-        const votedOption = poll.userVotes?.[user.id];
+    // Update polls
+    const updatedPolls = [];
+    for (let i = 0; i < polls.length; i++) {
+      const poll = polls[i];
+      
+      if (poll.id !== pollId) {
+        updatedPolls.push(poll);
+      } else {
+        // Check if user already voted
+        const votedOption = poll.userVotes && poll.userVotes[user.id];
         if (votedOption !== undefined) {
           showToast("You already voted in this poll", "info");
-          return poll;
+          updatedPolls.push(poll);
+        } else {
+          // Update vote count
+          const nextVotes = [];
+          for (let j = 0; j < poll.votes.length; j++) {
+            if (j === optionIndex) {
+              nextVotes.push(poll.votes[j] + 1);
+            } else {
+              nextVotes.push(poll.votes[j]);
+            }
+          }
+          
+          // Update user votes
+          const newUserVotes = {};
+          if (poll.userVotes) {
+            for (const key in poll.userVotes) {
+              newUserVotes[key] = poll.userVotes[key];
+            }
+          }
+          newUserVotes[user.id] = optionIndex;
+          
+          updatedPolls.push({
+            ...poll,
+            votes: nextVotes,
+            userVotes: newUserVotes,
+          });
         }
-
-        const nextVotes = poll.votes.map((count, i) =>
-          i === optionIndex ? count + 1 : count,
-        );
-
-        return {
-          ...poll,
-          votes: nextVotes,
-          userVotes: { ...(poll.userVotes || {}), [user.id]: optionIndex },
-        };
-      }),
-    );
+      }
+    }
+    
+    setPolls(updatedPolls);
   };
 
   return (

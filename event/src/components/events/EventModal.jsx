@@ -14,14 +14,24 @@ function EventModal({
   }
 
   const eventDate = new Date(event.date);
-  const isPast = eventDate < new Date();
+  const now = new Date();
+  const isPast = eventDate < now;
   const registeredCount = event.registeredUsers?.length || 0;
   const waitlistCount = event.waitlistUsers?.length || 0;
-  const seatsLeft = Math.max((event.seatLimit || 0) - registeredCount, 0);
-  const deadline = event.registrationDeadline
-    ? new Date(event.registrationDeadline)
-    : eventDate;
-  const deadlinePassed = deadline < new Date();
+  
+  // Calculate seats left
+  const seatLimit = event.seatLimit || 0;
+  let seatsLeft = seatLimit - registeredCount;
+  if (seatsLeft < 0) {
+    seatsLeft = 0;
+  }
+  
+  // Get registration deadline
+  let deadline = eventDate;
+  if (event.registrationDeadline) {
+    deadline = new Date(event.registrationDeadline);
+  }
+  const deadlinePassed = deadline < now;
   const qrImageUrl = "/qr-pass.svg";
 
   return (

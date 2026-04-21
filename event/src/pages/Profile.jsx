@@ -23,32 +23,67 @@ const Profile = () => {
   const [changePassword, setChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
 
-  const joinedEvents = useMemo(
-    // Profile stats me sirf wahi events count kar raha hu jahan user actually registered hai.
-    () =>
-      events.filter((event) =>
-        (event.registeredUsers || event.joined || []).includes(user.id),
-      ),
-    [events, user.id],
-  );
-  const completedTasks = useMemo(
-    () => tasks.filter((task) => task.userId === user.id && task.done),
-    [tasks, user.id],
-  );
-  const answeredQuestions = useMemo(
-    () =>
-      qna.flatMap((question) =>
-        question.answers
-          .filter((answer) => answer.userId === user.id)
-          .map((answer) => ({ ...answer, questionTitle: question.title })),
-      ),
-    [qna, user.id],
-  );
-  const createdPolls = useMemo(
-    () => polls.filter((poll) => poll.createdBy === user.id),
-    [polls, user.id],
-  );
-  const pointsHistory = Array.isArray(user.pointsHistory) ? [...user.pointsHistory].reverse() : [];
+  const joinedEvents = useMemo(() => {
+    // Filter events where user is registered
+    const joined = [];
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i];
+      const registeredUsers = event.registeredUsers || event.joined || [];
+      if (registeredUsers.includes(user.id)) {
+        joined.push(event);
+      }
+    }
+    return joined;
+  }, [events, user.id]);
+  
+  const completedTasks = useMemo(() => {
+    // Filter completed tasks for this user
+    const completed = [];
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      if (task.userId === user.id && task.done) {
+        completed.push(task);
+      }
+    }
+    return completed;
+  }, [tasks, user.id]);
+  
+  const answeredQuestions = useMemo(() => {
+    // Get all answers posted by this user
+    const answered = [];
+    for (let i = 0; i < qna.length; i++) {
+      const question = qna[i];
+      for (let j = 0; j < question.answers.length; j++) {
+        const answer = question.answers[j];
+        if (answer.userId === user.id) {
+          answered.push({
+            ...answer,
+            questionTitle: question.title,
+          });
+        }
+      }
+    }
+    return answered;
+  }, [qna, user.id]);
+  
+  const createdPolls = useMemo(() => {
+    // Filter polls created by this user
+    const created = [];
+    for (let i = 0; i < polls.length; i++) {
+      if (polls[i].createdBy === user.id) {
+        created.push(polls[i]);
+      }
+    }
+    return created;
+  }, [polls, user.id]);
+  
+  // Reverse points history for latest first display
+  let pointsHistory = [];
+  if (Array.isArray(user.pointsHistory)) {
+    for (let i = user.pointsHistory.length - 1; i >= 0; i--) {
+      pointsHistory.push(user.pointsHistory[i]);
+    }
+  }
 
   const toggleEditing = () => {
     // Edit mode open hote hi current user data form me preload kar diya.

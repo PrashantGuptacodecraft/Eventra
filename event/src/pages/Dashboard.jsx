@@ -77,69 +77,100 @@ const Dashboard = () => {
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(0, 6);
 
-  const urgentTask =
-    [...userTasks]
-      .filter((task) => !task.done && task.deadline)
-      .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))[0] || null;
+  // Find urgent task with nearest deadline
+  const tasksWithDeadline = userTasks.filter((task) => !task.done && task.deadline);
+  const sortedByDeadline = tasksWithDeadline.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+  const urgentTask = sortedByDeadline.length > 0 ? sortedByDeadline[0] : null;
 
-  const urgentAlerts = [
-    upcomingEvents[0]
-      ? {
-          id: "next-event",
-          title: "Next Event",
-          text: `${upcomingEvents[0].title} on ${new Date(
-            upcomingEvents[0].date,
-          ).toLocaleDateString()}`,
-          actionPath: "/events",
-        }
-      : null,
-    urgentTask
-      ? {
-          id: "nearest-deadline",
-          title: "Nearest Deadline",
-          text: urgentTask.title,
-          actionPath: "/tasks",
-        }
-      : null,
-    pendingTasks > 0
-      ? {
-          id: "pending-tasks",
-          title: "Pending Tasks",
-          text: `${pendingTasks} task${pendingTasks > 1 ? "s" : ""} need attention`,
-          actionPath: "/tasks",
-        }
-      : null,
-  ].filter(Boolean);
+  // Build urgent alerts based on what is available
+  const urgentAlerts = [];
+  
+  if (upcomingEvents[0]) {
+    const nextEventDate = new Date(upcomingEvents[0].date).toLocaleDateString();
+    urgentAlerts.push({
+      id: "next-event",
+      title: "Next Event",
+      text: upcomingEvents[0].title + " on " + nextEventDate,
+      actionPath: "/events",
+    });
+  }
+  
+  if (urgentTask) {
+    urgentAlerts.push({
+      id: "nearest-deadline",
+      title: "Nearest Deadline",
+      text: urgentTask.title,
+      actionPath: "/tasks",
+    });
+  }
+  
+  if (pendingTasks > 0) {
+    const taskWord = pendingTasks > 1 ? "tasks" : "task";
+    urgentAlerts.push({
+      id: "pending-tasks",
+      title: "Pending Tasks",
+      text: pendingTasks + " " + taskWord + " need attention",
+      actionPath: "/tasks",
+    });
+  }
 
-  const topParticipants = [...users]
-    .filter((item) => item.role !== "admin")
-    .sort((a, b) => (b.points || 0) - (a.points || 0));
-  const userRank = topParticipants.findIndex((participant) => participant.id === user?.id) + 1;
+  // Filter non-admin users
+  const nonAdminUsers = [];
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].role !== "admin") {
+      nonAdminUsers.push(users[i]);
+    }
+  }
+  
+  // Sort by points highest first
+  const topParticipants = nonAdminUsers.sort((a, b) => {
+    const pointsA = a.points || 0;
+    const pointsB = b.points || 0;
+    return pointsB - pointsA;
+  });
+  
+  // Find user rank
+  let userRank = 0;
+  for (let i = 0; i < topParticipants.length; i++) {
+    if (topParticipants[i].id === user?.id) {
+      userRank = i + 1;
+      break;
+    }
+  }
 
-  const eventAndDeadlineItems = [
-    ...upcomingEvents.slice(0, 4).map((event) => ({
-      id: `focus-event-${event.id}`,
+  // Build events list
+  const eventsList = [];
+  for (let i = 0; i < upcomingEvents.length && i < 4; i++) {
+    const event = upcomingEvents[i];
+    const location = event.location || event.venue || "Location TBD";
+    const description = event.desc || event.description || "Upcoming event";
+    eventsList.push({
+      id: "focus-event-" + event.id,
       type: "event",
       title: event.title,
       date: event.date,
-      meta: event.location || event.venue || "Location TBD",
-      description: event.desc || event.description || "Upcoming event",
-    })),
-    ...userTasks
-      .filter((task) => !task.done && task.deadline)
-      .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-      .slice(0, 4)
-      .map((task) => ({
-        id: `focus-deadline-${task.id}`,
-        type: "deadline",
-        title: task.title,
-        date: task.deadline,
-        meta: `${task.priority} priority task`,
-        description: "Task deadline approaching",
-      })),
-  ]
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .slice(0, 6);
+      meta: location,
+      description: description,
+    });
+  }
+  
+  // Build tasks list
+  const tasksWithDeadlines = userTasks.filter((task) => !task.done && task.deadline);
+  const sortedTasks = tasksWithDeadlines.sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+  for (let i = 0; i < sortedTasks.length && i < 4; i++) {
+    const task = sortedTasks[i];
+    eventsList.push({
+      id: "focus-deadline-" + task.id,
+      type: "deadline",
+      title: task.title,
+      date: task.deadline,
+      meta: task.priority + " priority task",
+      description: "Task deadline approaching",
+    });
+  }
+  
+  // Sort combined list by date
+  const eventAndDeadlineItems = eventsList.sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 6);
 
   const recentNotes = notes
     .filter((note) => note.userId === user.id)

@@ -2,16 +2,32 @@ import React from "react";
 
 function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
   const eventDate = new Date(event.date);
-  const isPast = eventDate < new Date();
+  const now = new Date();
+  const isPast = eventDate < now;
   const status = isPast ? "Past" : "Upcoming";
-  const statusClass = isPast
-    ? "text-bg-secondary"
-    : "text-bg-success";
+  
+  // Determine status styling
+  let statusClass = "text-bg-success";
+  if (isPast) {
+    statusClass = "text-bg-secondary";
+  }
+  
   const category = event.category || "Hackathon";
   const registeredCount = event.registeredUsers?.length || 0;
   const waitlistCount = event.waitlistUsers?.length || 0;
-  // Negative seats na aaye, isliye Math.max se safe count nikal raha hu.
-  const seatsLeft = Math.max((event.seatLimit || 0) - registeredCount, 0);
+  
+  // Calculate seats left
+  const seatLimit = event.seatLimit || 0;
+  const seatsLeft = seatLimit - registeredCount;
+  let seatsLeftDisplay = seatsLeft;
+  if (seatsLeft < 0) {
+    seatsLeftDisplay = 0;
+  }
+  
+  // Get description
+  const description = event.description || "No description available.";
+  let shortDesc = description.slice(0, 95);
+  let showDots = description.length > 95;
 
   return (
     <article
@@ -36,15 +52,15 @@ function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
         </div>
 
         <p className="text-secondary mb-0">
-          {event.description?.slice(0, 95) || "No description available."}
-          {(event.description?.length || 0) > 95 ? "..." : ""}
+          {shortDesc}
+          {showDots && "..."}
         </p>
 
         <div className="small text-secondary d-flex flex-column gap-1">
           <span>Date: {eventDate.toLocaleDateString()}</span>
           <span>Venue: {event.venue || "TBD"}</span>
           <span>Registered: {registeredCount} / {event.seatLimit}</span>
-          <span>Seats Left: {seatsLeft}</span>
+          <span>Seats Left: {seatsLeftDisplay}</span>
           <span>Waitlist: {waitlistCount}</span>
         </div>
 
