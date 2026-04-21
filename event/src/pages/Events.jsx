@@ -143,7 +143,16 @@ const EventsPage = () => {
     });
 
     // Purane data shape me `joined` use hua tha, isliye usko bhi yaha sync rakha hai.
-    
+    setEvents(
+      updated.map((event) => ({
+        ...event,
+        joined: event.registeredUsers,
+        location: event.venue,
+        desc: event.description,
+        seatLimit: event.seatLimit,
+        registrationDeadline: event.registrationDeadline,
+      })),
+    );
 
     if (selectedEvent && selectedEvent.id === targetEvent.id) {
       const freshSelected = updated.find((event) => event.id === targetEvent.id) || null;
