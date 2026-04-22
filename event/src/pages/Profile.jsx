@@ -22,6 +22,44 @@ const Profile = () => {
   });
   const [changePassword, setChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+  const [showFutureUpdates, setShowFutureUpdates] = useState(false);
+
+  const futureUpdates = [
+    "Attendance Tracking",
+    "Marks & Grading System",
+    "CGPA Calculator",
+    "Assignment Management",
+    "Student Dashboard",
+    "Class/Course Management",
+    "Quiz & Assessment Tools",
+    "Parent Portal",
+    "Report Generation",
+    "Notifications & Reminders",
+    "Analytics for Educators",
+    "Integration with Learning Tools",
+    "User Authentication & Roles",
+    "Real-Time Features",
+    "Search & Filtering",
+    "Event Reminders & Notifications",
+    "Mobile Responsiveness",
+    "Database & API Backend",
+    "External Integrations",
+    "Analytics & Reporting",
+    "AI-Powered Suggestions",
+    "Multi-Language Support",
+    "Gamification",
+    "Data Export/Import",
+    "Timetable/Schedule Builder",
+    "Resource Library",
+    "Feedback & Surveys",
+    "Gamification Elements",
+    "Offline Mode",
+    "Data Analytics Dashboard",
+    "API Integrations",
+    "Security & Compliance",
+    "Mobile App Companion",
+    "AI-Powered Insights",
+  ];
 
   const joinedEvents = useMemo(() => {
     // Filter events where user is registered
@@ -35,7 +73,7 @@ const Profile = () => {
     }
     return joined;
   }, [events, user.id]);
-  
+
   const completedTasks = useMemo(() => {
     // Filter completed tasks for this user
     const completed = [];
@@ -47,7 +85,7 @@ const Profile = () => {
     }
     return completed;
   }, [tasks, user.id]);
-  
+
   const answeredQuestions = useMemo(() => {
     // Get all answers posted by this user
     const answered = [];
@@ -65,7 +103,7 @@ const Profile = () => {
     }
     return answered;
   }, [qna, user.id]);
-  
+
   const createdPolls = useMemo(() => {
     // Filter polls created by this user
     const created = [];
@@ -76,7 +114,7 @@ const Profile = () => {
     }
     return created;
   }, [polls, user.id]);
-  
+
   // Reverse points history for latest first display
   let pointsHistory = [];
   if (Array.isArray(user.pointsHistory)) {
@@ -234,6 +272,12 @@ const Profile = () => {
               <span>Points</span>
               <p>{user.points || 0}</p>
             </div>
+            <button
+              onClick={() => setShowFutureUpdates(true)}
+              className="profile-future-btn"
+            >
+              Future Updates
+            </button>
           </div>
         )}
 
@@ -344,10 +388,47 @@ const Profile = () => {
                 </div>
               ))
             ) : (
-              <p className="profile-empty-text">No point history available yet.</p>
+              <p className="profile-empty-text">
+                No point history available yet.
+              </p>
             )}
           </div>
         </div>
+
+        {showFutureUpdates && (
+          <div className="future-updates-modal">
+            <div className="future-updates-screen">
+              <div className="future-updates-header">
+                <div>
+                  <span className="future-updates-eyebrow">Planned Roadmap</span>
+                  <h2>Future Updates</h2>
+                  <p>
+                    These are frontend showcase ideas for what can be added later.
+                    They are listed here for display only and are not active features yet.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowFutureUpdates(false)}
+                  className="modal-close-btn"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="future-updates-grid">
+                {futureUpdates.map((item, index) => (
+                  <div key={item} className="future-update-card">
+                    <span className="future-update-index">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3>{item}</h3>
+                    <p>Planned for a future version.</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

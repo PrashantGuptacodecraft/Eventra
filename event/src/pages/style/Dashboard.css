@@ -897,8 +897,20 @@
 
 [data-theme="dark"] .dashboard-stat-card-violet {
   background:
-    radial-gradient(circle at top right, rgba(139, 92, 246, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(239, 68, 68, 0.2), transparent 32%),
     linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(17, 24, 39, 0.98));
+}
+
+[data-theme="dark"] .dashboard-stat-card-violet .dashboard-eyebrow {
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .dashboard-stat-card-violet .dashboard-stat-value {
+  color: #f87171;
+}
+
+[data-theme="dark"] .dashboard-stat-card-violet .dashboard-stat-note {
+  color: #fecaca;
 }
 
 [data-theme="dark"] .dashboard-stat-card-amber {

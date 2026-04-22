@@ -187,6 +187,22 @@
   font-weight: 600;
 }
 
+.profile-future-btn {
+  grid-column: 1 / -1;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.profile-future-btn:hover {
+  background: #e2e8f0;
+}
+
 .profile-stats-card {
   padding: 22px;
 }
@@ -336,6 +352,193 @@
   .profile-info-grid,
   .profile-stats-grid,
   .profile-activity-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.future-updates-modal {
+  position: fixed;
+  inset: 0;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.74);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.future-updates-screen {
+  width: min(1180px, 100%);
+  height: min(88vh, 920px);
+  overflow-y: auto;
+  border-radius: 28px;
+  padding: 28px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(249, 115, 22, 0.12), transparent 32%),
+    #f8fafc;
+  box-shadow: 0 28px 72px rgba(15, 23, 42, 0.32);
+}
+
+.future-updates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.future-updates-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.future-updates-header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: #0f172a;
+}
+
+.future-updates-header p {
+  margin: 10px 0 0;
+  max-width: 760px;
+  color: #475569;
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.future-updates-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.modal-close-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 11px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  background: #1e293b;
+}
+
+.future-update-card {
+  min-height: 140px;
+  border-radius: 22px;
+  padding: 18px;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
+}
+
+.future-update-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  height: 32px;
+  border-radius: 999px;
+  margin-bottom: 14px;
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.future-update-card h3 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.future-update-card p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+[data-theme="dark"] .future-updates-screen {
+  border-color: rgba(148, 163, 184, 0.14);
+  background:
+    radial-gradient(circle at top right, rgba(239, 68, 68, 0.14), transparent 28%),
+    radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.14), transparent 30%),
+    #0f172a;
+}
+
+[data-theme="dark"] .future-updates-eyebrow {
+  background: rgba(248, 113, 113, 0.14);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .future-updates-header h2,
+[data-theme="dark"] .future-update-card h3 {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .future-updates-header p,
+[data-theme="dark"] .future-update-card p {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .future-update-card {
+  border-color: rgba(148, 163, 184, 0.12);
+  background: #1e293b;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .future-update-index {
+  background: rgba(248, 113, 113, 0.16);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .modal-close-btn {
+  background: #dc2626;
+}
+
+[data-theme="dark"] .modal-close-btn:hover {
+  background: #b91c1c;
+}
+
+@media (max-width: 1024px) {
+  .future-updates-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .future-updates-modal {
+    padding: 14px;
+  }
+
+  .future-updates-screen {
+    height: 92vh;
+    padding: 20px;
+    border-radius: 24px;
+  }
+
+  .future-updates-header {
+    flex-direction: column;
+  }
+
+  .future-updates-grid {
     grid-template-columns: 1fr;
   }
 }

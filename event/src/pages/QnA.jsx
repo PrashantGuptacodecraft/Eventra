@@ -13,19 +13,6 @@ const QnA = () => {
   const [answerContent, setAnswerContent] = useState("");
   const [editingAnswer, setEditingAnswer] = useState(null);
   const [editedAnswerContent, setEditedAnswerContent] = useState("");
-  const askedByUser = qna.filter((question) => question.userId === user.id).length;
-  
-  // Count answers by user
-  let answersByUser = 0;
-  for (let i = 0; i < qna.length; i++) {
-    const question = qna[i];
-    for (let j = 0; j < question.answers.length; j++) {
-      if (question.answers[j].userId === user.id) {
-        answersByUser++;
-      }
-    }
-  }
-  
   // Simple search by title
   const normalizedQuery = searchQuery.trim().toLowerCase();
   let visibleQuestions = [];
@@ -39,10 +26,6 @@ const QnA = () => {
   } else {
     visibleQuestions = qna;
   }
-  
-  // Calculate section coins
-  const sectionCoins = askedByUser * 3 + answersByUser * 5;
-
   const handleChange = (e) => {
     // Ask question form ke inputs ko ek hi handler se manage kar raha hu.
     setFormData({
@@ -176,9 +159,6 @@ const QnA = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Q&A Forum</h1>
-          <p className="text-sm text-gray-600 mt-1">
-            Coins earned in this section: {sectionCoins}
-          </p>
         </div>
         <button
           onClick={() => setShowForm(true)}

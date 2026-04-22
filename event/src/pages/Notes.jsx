@@ -28,8 +28,6 @@ const Notes = () => {
   } else {
     visibleNotes = userNotes;
   }
-  const sectionCoins = userNotes.length * 2;
-
   const handleChange = (e) => {
     // Notes form ke liye common input handler use kiya hai.
     setFormData({
@@ -130,7 +128,6 @@ const Notes = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-800">📝 My Notes</h1>
           <p className="text-gray-600">{visibleNotes.length} notes</p>
-          <p className="text-sm text-gray-500">Coins earned in this section: {sectionCoins}</p>
         </div>
         <button
           onClick={() => setShowForm(true)}

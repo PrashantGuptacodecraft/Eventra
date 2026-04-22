@@ -210,7 +210,7 @@ const Dashboard = () => {
   const points = user?.points || 0;
   const pointsHistory = Array.isArray(user?.pointsHistory) ? user.pointsHistory : [];
   const categorizedPoints = useMemo(() => {
-    // Points ko event vs task buckets me split kiya hai so breakdown samajhna easy ho.
+    // Breakdown me sirf event aur task rewards hi dikhane hain.
     const eventEntries = pointsHistory.filter((entry) => {
       const text = `${entry.reason || ""}`.toLowerCase();
       return text.includes("event") || text.includes("hackathon") || text.includes("registered");
@@ -221,18 +221,11 @@ const Dashboard = () => {
       return text.includes("task");
     });
 
-    const otherEntries = pointsHistory.filter(
-      (entry) => !eventEntries.includes(entry) && !taskEntries.includes(entry),
-    );
-
     return {
       eventEntries,
-      taskEntries: [...taskEntries, ...otherEntries],
+      taskEntries,
       eventPoints: eventEntries.reduce((sum, entry) => sum + (entry.points || 0), 0),
-      taskPoints: [...taskEntries, ...otherEntries].reduce(
-        (sum, entry) => sum + (entry.points || 0),
-        0,
-      ),
+      taskPoints: taskEntries.reduce((sum, entry) => sum + (entry.points || 0), 0),
     };
   }, [pointsHistory]);
 
