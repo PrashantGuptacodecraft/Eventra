@@ -31,7 +31,7 @@ function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
 
   return (
     <article
-      className={`card border-0 shadow-sm rounded-4 h-100 ${
+      className={`event-card card border-0 shadow-sm rounded-4 h-100 ${
         isRegistered ? "bg-success-subtle" : ""
       }`}
     >
@@ -51,12 +51,12 @@ function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
           )}
         </div>
 
-        <p className="text-secondary mb-0">
+        <p className="event-card-copy text-secondary mb-0">
           {shortDesc}
           {showDots && "..."}
         </p>
 
-        <div className="small text-secondary d-flex flex-column gap-1">
+        <div className="event-card-meta small text-secondary d-flex flex-column gap-1">
           <span>Date: {eventDate.toLocaleDateString()}</span>
           <span>Venue: {event.venue || "TBD"}</span>
           <span>Registered: {registeredCount} / {event.seatLimit}</span>
@@ -67,7 +67,7 @@ function EventCard({ event, isRegistered, isWaitlisted, onMoreInfo }) {
         <div className="mt-auto pt-2">
           <button
             type="button"
-            className="btn btn-outline-dark w-100 rounded-pill"
+            className="event-card-action btn btn-outline-dark w-100 rounded-pill"
             onClick={() => onMoreInfo(event)}
           >
             More Info

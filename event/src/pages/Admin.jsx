@@ -153,19 +153,25 @@ const Admin = () => {
         <nav className="d-flex gap-2 gap-md-3 flex-wrap">
           <button
             onClick={() => setActiveTab("users")}
-            className={`px-4 py-2 rounded ${activeTab === "users" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+            className={`admin-tab-button px-4 py-2 rounded ${
+              activeTab === "users" ? "admin-tab-button-active" : "admin-tab-button-idle"
+            }`}
           >
             Users ({visibleUsers.length})
           </button>
           <button
             onClick={() => setActiveTab("events")}
-            className={`px-4 py-2 rounded ${activeTab === "events" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+            className={`admin-tab-button px-4 py-2 rounded ${
+              activeTab === "events" ? "admin-tab-button-active" : "admin-tab-button-idle"
+            }`}
           >
             Events ({visibleEvents.length})
           </button>
           <button
             onClick={() => setActiveTab("stats")}
-            className={`px-4 py-2 rounded ${activeTab === "stats" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+            className={`admin-tab-button px-4 py-2 rounded ${
+              activeTab === "stats" ? "admin-tab-button-active" : "admin-tab-button-idle"
+            }`}
           >
             Statistics
           </button>

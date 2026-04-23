@@ -36,12 +36,14 @@ function EventModal({
 
   return (
     <div
-      className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+      className="event-modal-backdrop position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
       style={{ background: "rgba(15, 23, 42, 0.55)", zIndex: 1050 }}
       onClick={onClose}
     >
       <div
-        className={`rounded-4 shadow-lg p-4 ${isRegistered ? "bg-success-subtle" : "bg-white"}`}
+        className={`event-modal rounded-4 shadow-lg p-4 ${
+          isRegistered ? "bg-success-subtle" : "bg-white"
+        }`}
         style={{ width: "min(92vw, 680px)", maxHeight: "85vh", overflowY: "auto" }}
         onClick={(eventClick) => eventClick.stopPropagation()}
       >
@@ -65,26 +67,26 @@ function EventModal({
 
         <div className="mb-3">
           <h6 className="mb-1">Description</h6>
-          <p className="text-secondary mb-0">
+          <p className="event-modal-copy text-secondary mb-0">
             {event.description || "No description available."}
           </p>
         </div>
 
         <div className="row g-3 mb-3">
           <div className="col-sm-6">
-            <div className="border rounded-3 p-3 h-100">
+            <div className="event-modal-info border rounded-3 p-3 h-100">
               <h6 className="mb-1">Date</h6>
               <p className="mb-0 text-secondary">{eventDate.toLocaleDateString()}</p>
             </div>
           </div>
           <div className="col-sm-6">
-            <div className="border rounded-3 p-3 h-100">
+            <div className="event-modal-info border rounded-3 p-3 h-100">
               <h6 className="mb-1">Venue</h6>
               <p className="mb-0 text-secondary">{event.venue || "TBD"}</p>
             </div>
           </div>
           <div className="col-sm-6">
-            <div className="border rounded-3 p-3 h-100">
+            <div className="event-modal-info border rounded-3 p-3 h-100">
               <h6 className="mb-1">Seat Limit</h6>
               <p className="mb-0 text-secondary">
                 {registeredCount} / {event.seatLimit} filled
@@ -92,7 +94,7 @@ function EventModal({
             </div>
           </div>
           <div className="col-sm-6">
-            <div className="border rounded-3 p-3 h-100">
+            <div className="event-modal-info border rounded-3 p-3 h-100">
               <h6 className="mb-1">Registration Deadline</h6>
               <p className="mb-0 text-secondary">
                 {deadline.toLocaleDateString()}
@@ -103,11 +105,13 @@ function EventModal({
 
         <div className="mb-4">
           <h6 className="mb-1">Rules</h6>
-          <p className="text-secondary mb-0">{event.rules || "Follow event guidelines and be respectful."}</p>
+          <p className="event-modal-copy text-secondary mb-0">
+            {event.rules || "Follow event guidelines and be respectful."}
+          </p>
         </div>
 
         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-          <span className="text-secondary small">
+          <span className="event-modal-meta text-secondary small">
             Registered: {registeredCount} | Seats left: {seatsLeft} | Waitlist: {waitlistCount}
           </span>
           <div className="d-flex gap-2 flex-wrap justify-content-end">
@@ -115,7 +119,7 @@ function EventModal({
               <>
                 <button
                   type="button"
-                  className="btn btn-outline-dark rounded-pill px-4"
+                  className="event-modal-action btn btn-outline-dark rounded-pill px-4"
                   onClick={() => setShowQr((current) => !current)}
                 >
                   {showQr ? "Hide QR" : "Open QR"}
@@ -140,11 +144,11 @@ function EventModal({
 
         {isRegistered && showQr ? (
           <div className="mt-4">
-            <div
-              className="mx-auto rounded-4 border shadow-sm bg-white overflow-hidden"
+          <div
+              className="event-modal-qr mx-auto rounded-4 border shadow-sm bg-white overflow-hidden"
               style={{ maxWidth: "320px" }}
             >
-              <div className="px-3 py-2 border-bottom bg-light text-center">
+              <div className="event-modal-qr-head px-3 py-2 border-bottom bg-light text-center">
                 <h6 className="mb-1 fw-bold">Event Entry QR</h6>
                 <p className="small text-secondary mb-0">{event.title}</p>
               </div>
